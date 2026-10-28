@@ -48,6 +48,7 @@ function doPost(e) {
       .map(k => (ETICHETTE[k] || k) + ": " + String(d[k]).slice(0, 3000));
 
     const opzioni = {
+      name: "Print3DLab", // il nome che si vede come mittente (al posto del nome del papa')
       to: EMAIL.join(","),
       subject: titolo.slice(0, 200),
       body: righe.join("\n") + "\n\n—\nTutti i dati sono anche su Netlify > Forms.",
