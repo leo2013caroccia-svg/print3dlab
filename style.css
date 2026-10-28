@@ -356,6 +356,14 @@ body.menu-aperto .menu-lato{opacity:1}
 .modulo-stato{font-weight:600}
 .modulo-stato.ok{color:#14804e}
 .modulo-stato.errore{color:#c2341b}
+.conto .conto-permesso{margin-top:18px;font-size:14px;color:rgba(255,255,255,.75)}
+.conto .conto-avanti{width:100%;margin-top:14px;background:var(--accento);color:#fff;border-color:transparent}
+.conto .conto-avanti:not(:disabled):hover{filter:brightness(1.08)}
+.conto .conto-avanti:disabled{opacity:.45;cursor:not-allowed}
+.conto .modulo-stato:not(:empty){margin-top:10px}
+.conto .modulo-stato.errore{color:#ff8a6b}
+.conto .conto-altro{margin-top:12px;font-size:14px;color:rgba(255,255,255,.6)}
+.conto-altro a{color:inherit;text-decoration:underline}
 .grazie [data-grazie-stato]:empty{display:none}
 
 /* --- Domande --- */
@@ -580,6 +588,9 @@ dialog.chiude::backdrop{animation:velo-via .24s ease both}
 .riga{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;padding:16px 0;border-bottom:1px solid var(--linea)}
 .riga.nuova{animation:entra .5s var(--morbido)}
 .riga img{width:72px;height:72px;border-radius:12px;object-fit:cover;background:var(--fondo-basso)}
+.riga-3d{display:grid;place-items:center;width:72px;height:72px;border-radius:12px;background:var(--inchiostro);color:var(--accento);font:650 20px/1 var(--f-titolo);letter-spacing:-.02em}
+.riepilogo-foto .riga-3d{width:100%;height:100%;font-size:16px}
+.riga-pezzi{font-size:14px;color:var(--tenue)}
 .riga-nome{font-weight:600;line-height:1.3}
 .riga-dettagli{font-size:13.5px;color:var(--tenue);overflow-wrap:anywhere;margin-top:2px}
 .riga-comandi{display:flex;align-items:center;gap:14px;margin-top:10px}

@@ -312,18 +312,21 @@ const hexInRgb = hex => { const n = parseInt(hex.slice(1), 16); return [(n >> 16
 //  IL PREZZO
 // ---------------------------------------------------------------------
 function stima(){
-  const m = calc.modello; if(!m) return null;
-  const s = calc.scala / 100;
+  return calc.modello ? prezzoStampa(calc.modello, calc) : null;
+}
+// o = { scala, materiale, qualita, riempimento, quantita }. ATTENZIONE: uguale in supabase/functions/pagamento/index.ts
+function prezzoStampa(m, o){
+  const s = o.scala / 100;
   const volume = m.volume * s ** 3 / 1000;           // cm3
   const area = m.area * s ** 2 / 100;                // cm2
   // le pareti esterne sono piene (circa 1,2 mm), dentro c'e' il riempimento
   const guscio = Math.min(volume, area * 0.12);
-  const pieno = guscio + (volume - guscio) * calc.riempimento.valore;
-  const grammi = pieno * calc.materiale.densita * 1.08; // +8% per supporti e scarti
-  const ore = grammi / (calc.qualita.grammiOra * calc.materiale.velocita) + 0.15;
-  const materiale = grammi * CAL.prezzoGrammo * calc.materiale.fattore;
+  const pieno = guscio + (volume - guscio) * o.riempimento.valore;
+  const grammi = pieno * o.materiale.densita * 1.08; // +8% per supporti e scarti
+  const ore = grammi / (o.qualita.grammiOra * o.materiale.velocita) + 0.15;
+  const materiale = grammi * CAL.prezzoGrammo * o.materiale.fattore;
   const macchina = ore * CAL.prezzoOra;
-  const q = calc.quantita;
+  const q = o.quantita;
   const pezzi = (materiale + macchina) * q;
   const sconto = q >= CAL.scontoDa ? pezzi * CAL.sconto : 0;
   let totale = CAL.preparazione + pezzi - sconto;
@@ -341,17 +344,15 @@ function aggiornaConto(){
   const scrivi = (k, t) => { $(`[data-stima="${k}"]`, f).textContent = t; };
   const nota = $("[data-conto-nota]", f), avviso = $("[data-visore-avviso]", f);
   $("[data-scala-valore]", f).textContent = calc.scala + "%";
-  f.elements["materiale"].value = calc.materiale.nome;
-  f.elements["qualita"].value = `${calc.qualita.nome} (${calc.qualita.info})`;
-  f.elements["riempimento"].value = `${calc.riempimento.nome} (${calc.riempimento.info})`;
-  f.elements["colore"].value = calc.colore.nome;
+  const avanti = $("[data-file-avanti]", f);
+  avanti.disabled = !st || !st.sta || !calc.file;
+  avanti.textContent = st && st.sta ? `Avanti · ${chf(st.totale)}` : "Avanti";
 
   if(!st){
     ["peso", "tempo", "pezzo", "totale"].forEach(k => scrivi(k, "–"));
     nota.textContent = calc.tipo === "step"
-      ? "Per i file STEP il prezzo lo calcoliamo noi: mandaci la richiesta e ti rispondiamo entro un giorno."
+      ? "Per i file STEP il prezzo lo calcoliamo noi: scrivici dalla pagina Contatti."
       : "Carica un file STL, 3MF o OBJ per vedere il prezzo.";
-    ["dimensioni", "peso-stimato", "tempo-stimato", "prezzo-stimato"].forEach(n => { f.elements[n].value = ""; });
     return;
   }
   scrivi("peso", scriviPeso(st.grammi * 1));
@@ -359,7 +360,7 @@ function aggiornaConto(){
   scrivi("pezzo", chf(st.alPezzo));
   scrivi("totale", chf(st.totale));
   $('[data-stima="totale"]', f).classList.remove("cambia"); void f.offsetWidth; $('[data-stima="totale"]', f).classList.add("cambia");
-  nota.textContent = st.sconto ? `Con lo sconto di ${Math.round(CAL.sconto * 100)}% da ${CAL.scontoDa} pezzi. Prezzo finale confermato da noi.` : "Stima automatica. Il prezzo finale te lo confermiamo noi.";
+  nota.textContent = st.sconto ? `Con lo sconto di ${Math.round(CAL.sconto * 100)}% da ${CAL.scontoDa} pezzi.` : "Calcolato dal tuo file. Prima di stampare lo controlliamo noi.";
   $('[data-stima="dettagli"]', f).innerHTML = `
     <dl>
       <div><dt>Filamento (${scriviPeso(st.grammi)} di ${calc.materiale.nome} × ${calc.quantita})</dt><dd>${chf(st.materiale * calc.quantita)}</dd></div>
@@ -374,10 +375,6 @@ function aggiornaConto(){
   avviso.textContent = !st.sta
     ? `Così è troppo grande per la stampante (massimo ${CAL.piatto / 10} cm per lato): riduci la grandezza oppure lo stampiamo in più pezzi.`
     : "È molto piccolo: sotto i 5 mm i dettagli si perdono.";
-  f.elements["dimensioni"].value = scriviMisure(st.misure);
-  f.elements["peso-stimato"].value = scriviPeso(st.grammi);
-  f.elements["tempo-stimato"].value = scriviOre(st.ore);
-  f.elements["prezzo-stimato"].value = `${chf(st.totale)} (${chf(st.alPezzo)} al pezzo)`;
 }
 
 // ---------------------------------------------------------------------
@@ -402,7 +399,7 @@ function mostraFile(file){
   const titolo = $("[data-zona-titolo]", f), sotto = $("[data-zona-sotto]", f);
   const tela = $("#visore-tela"), barra = $("[data-visore-barra]", f), aiuto = $("[data-visore-aiuto]", f), avviso = $("[data-visore-avviso]", f);
   zona.classList.remove("errore", "pieno");
-  calc.modello = null; calc.tipo = "";
+  calc.modello = null; calc.tipo = ""; calc.file = file || null;
   if(!file){
     zona.hidden = false; tela.hidden = barra.hidden = aiuto.hidden = avviso.hidden = true;
     titolo.textContent = "Trascina qui il tuo file 3D";
@@ -434,7 +431,8 @@ function mostraFile(file){
     }
     if(file.size > maxInvio()){
       avviso.hidden = false;
-      avviso.textContent = `Il file pesa ${(file.size / 1048576).toFixed(1).replace(".", ",")} MB: il prezzo te lo mostriamo, ma per mandarcelo incolla un link (Google Drive, WeTransfer...) qui sotto.`;
+      avviso.textContent = `Il file pesa ${(file.size / 1048576).toFixed(1).replace(".", ",")} MB, il massimo è ${mbMax()} MB: mandacelo con un link (Google Drive, WeTransfer...) dalla pagina Contatti.`;
+      calc.file = null;
     }
     aggiornaConto();
     if(file.size > maxInvio()) avviso.hidden = false;
@@ -442,7 +440,7 @@ function mostraFile(file){
     zona.classList.remove("pieno"); zona.classList.add("errore");
     zona.hidden = false; tela.hidden = aiuto.hidden = true; barra.hidden = true;
     titolo.textContent = err.message === "grande" ? "Questo file è troppo grande da leggere" : "Non riesco a leggere questo file";
-    sotto.textContent = err.message === "tipo" ? "Usa un file STL, 3MF, OBJ o STEP." : "Controlla che sia un modello 3D valido, oppure mandacelo lo stesso con un link.";
+    sotto.textContent = err.message === "tipo" ? "Usa un file STL, 3MF, OBJ o STEP (non G-code)." : "Controlla che sia un modello 3D valido, oppure mandacelo con un link dalla pagina Contatti.";
     aggiornaConto();
   });
 }
@@ -489,50 +487,48 @@ function avviaCalcolatore(){
   pagine.quandoCambia.push(p => { if(p === "carica") richiediDisegno(); });
   document.addEventListener("visibilitychange", richiediDisegno);
 
-  // invio
+  // AVANTI: il file va nella cartella privata di Supabase, poi nel carrello, poi alla cassa
   const stato = $(".modulo-stato", f);
   f.addEventListener("submit", async e => {
     e.preventDefault();
     stato.className = "modulo-stato";
-    const file = input.files[0], link = f.elements["link"].value.trim();
-    if(!file && !link){
+    const st = stima(), file = calc.file;
+    if(!st || !st.sta || !file) return;
+    const permesso = f.elements["accetto"];
+    if(!permesso.checked){
       stato.classList.add("errore");
-      stato.textContent = "Carica un file o incolla il link al modello.";
-      zona.hidden ? $("[data-visore-cambia]", f).focus() : input.focus();
+      stato.textContent = "Spunta la casella: il file deve essere tuo o devi avere il permesso di stamparlo.";
+      permesso.focus();
       return;
     }
-    const grande = file && file.size > maxInvio();
-    if(grande && !link){
+    if(!supabaseAttivo()){
       stato.classList.add("errore");
-      stato.textContent = `Il file pesa più di ${mbMax()} MB: incolla un link (Google Drive, WeTransfer...) per mandarcelo.`;
-      f.elements["link"].focus();
+      stato.innerHTML = `Adesso non riusciamo a ricevere file dal sito: mandacelo per email a ${linkEmail()}.`;
       return;
     }
-    if(!campiOk(f)) return;
-    const bottone = $("button[type=submit]", f);
+    const bottone = $("[data-file-avanti]", f);
     bottone.disabled = true;
-    stato.textContent = file && !grande ? "Invio del file in corso…" : "Invio in corso…";
-    const dati = new FormData(f);
-    ["opz-materiali", "opz-qualita", "opz-riempimento"].forEach(n => dati.delete(n));
-    if(!file || grande) dati.delete("file");
     try {
-      // con Supabase il file va prima nella vostra cartella privata, a Netlify arriva solo il suo nome
-      if(file && !grande && supabaseAttivo()){
-        const percorso = await caricaSuSupabase(file, p => { stato.textContent = `Carico il file… ${Math.round(p * 100)}%`; });
-        dati.delete("file");
-        dati.set("file-online", `${NEGOZIO.supabase.cartellaFile}/${percorso}`);
-        stato.textContent = "File caricato, invio la richiesta…";
-      }
-      await inviaModulo(f, dati);
-      stato.classList.add("ok");
-      stato.textContent = "Richiesta ricevuta, grazie! Ti scriviamo entro un giorno con il prezzo finale.";
-      ["link", "note"].forEach(n => { f.elements[n].value = ""; });
-      f.elements["file-online"].value = "";
+      const percorso = await caricaSuSupabase(file, p => { bottone.textContent = `Carico il file… ${Math.round(p * 100)}%`; });
+      aggiungiFileAlCarrello({
+        file: percorso, nomeFile: file.name,
+        materiale: calc.materiale.id, qualita: calc.qualita.id, riempimento: calc.riempimento.id,
+        scala: calc.scala, colore: calc.colore.nome, pezzi: calc.quantita,
+        dettagli: [calc.materiale.nome, `${calc.qualita.nome} ${calc.qualita.info}`, `riempimento ${calc.riempimento.info}`,
+          calc.scala !== 100 ? `${calc.scala}%` : "", calc.colore.nome, `${calc.quantita} ${calc.quantita === 1 ? "pezzo" : "pezzi"}`,
+          scriviMisure(st.misure), scriviPeso(st.grammi), scriviOre(st.ore)].filter(Boolean).join(" · "),
+        prezzo: st.totale,
+      });
+      // si riparte da capo, il file e' nel carrello
+      $("#campo-file").value = "";
+      permesso.checked = false;
+      mostraFile(null);
+      location.hash = "#cassa";
     } catch(err){
       stato.classList.add("errore");
-      stato.innerHTML = `Non è partita. Riprova o scrivici a ${linkEmail()}.`;
+      stato.innerHTML = `Il file non è partito. Riprova, oppure mandacelo per email a ${linkEmail()}.`;
     }
-    bottone.disabled = false;
+    aggiornaConto();
   });
   aggiornaConto();
 }

@@ -139,15 +139,10 @@
         <p class="etichetta">02 / Carica file</p>
         <h2>Carica il modello, <em>vedi subito il prezzo.</em></h2>
       </div>
-      <p class="testa-lato">Il calcolatore legge il tuo file STL, 3MF o OBJ, ti mostra il modello in 3D e stima peso, tempo di stampa e prezzo. Il prezzo finale te lo confermiamo noi entro un giorno.</p>
+      <p class="testa-lato">Il calcolatore legge il tuo file STL, 3MF o OBJ, ti mostra il modello in 3D e calcola peso, tempo di stampa e prezzo. Poi premi Avanti, scegli la spedizione e paghi.</p>
     </div>
 
-    <form class="calcolo" name="file-da-stampare" method="POST" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="campo-trappola" id="modulo-file" novalidate>
-      <input type="hidden" name="form-name" value="file-da-stampare">
-      <p class="nascosto"><label>Non compilare: <input name="campo-trappola" tabindex="-1" autocomplete="off"></label></p>
-      <input type="hidden" name="materiale"><input type="hidden" name="qualita"><input type="hidden" name="riempimento"><input type="hidden" name="colore">
-      <input type="hidden" name="dimensioni"><input type="hidden" name="peso-stimato"><input type="hidden" name="tempo-stimato"><input type="hidden" name="prezzo-stimato"><input type="hidden" name="file-online">
-
+    <form class="calcolo" id="modulo-file" novalidate>
       <div class="calcolo-griglia">
         <!-- il modello in 3D -->
         <div class="visore" id="visore">
@@ -208,7 +203,7 @@
               <div><dt>Prezzo al pezzo</dt><dd data-stima="pezzo">–</dd></div>
             </dl>
             <div class="conto-totale">
-              <span>Totale indicativo</span>
+              <span>Totale</span>
               <b data-stima="totale">–</b>
             </div>
             <p class="conto-nota" data-conto-nota>Carica un file STL, 3MF o OBJ per vedere il prezzo.</p>
@@ -216,37 +211,14 @@
               <summary>Come calcoliamo il prezzo</summary>
               <div data-stima="dettagli"><p>Il prezzo dipende da quanto filamento serve (peso) e da quante ore lavora la stampante, più un costo fisso per preparare la stampa. Da 5 pezzi uguali c'è uno sconto.</p></div>
             </details>
+            <label class="spunta conto-permesso"><input type="checkbox" name="accetto" required><span>Il file è mio o ho il permesso di stamparlo.</span></label>
+            <button class="bottone bottone-grande bottone-pieno conto-avanti" type="submit" data-file-avanti disabled>Avanti</button>
+            <p class="modulo-stato" role="status" aria-live="polite"></p>
+            <p class="conto-altro">Hai un file STEP o solo un link? <a href="#contatti">Scrivici</a> e ti facciamo il prezzo noi.</p>
           </div>
         </div>
       </div>
 
-      <div class="calcolo-dati">
-        <div class="calcolo-dati-testa">
-          <h3>Mandaci la richiesta</h3>
-          <p>Controlliamo il file e ti confermiamo prezzo e data per email. Non paghi niente adesso.</p>
-        </div>
-        <fieldset class="campi">
-          <label class="campo campo-largo"><span>Non hai il file? Incolla il link al modello <small>(MakerWorld, Printables, Thingiverse, Google Drive)</small></span>
-            <input name="link" id="campo-link" type="url" placeholder="https://" inputmode="url">
-          </label>
-          <label class="campo"><span>Nome</span><input name="nome" autocomplete="given-name" required></label>
-          <label class="campo"><span>Cognome</span><input name="cognome" autocomplete="family-name" required></label>
-          <label class="campo"><span>Email</span><input name="email" type="email" autocomplete="email" required></label>
-          <label class="campo"><span>Telefono <small>(facoltativo)</small></span><input name="telefono" type="tel" autocomplete="tel" inputmode="tel"></label>
-          <div class="scelte campo-largo" role="radiogroup" aria-label="Consegna">
-            <label class="scelta"><input type="radio" name="consegna" value="PostPac Economy" checked><span>PostPac Economy<small>2-3 giorni · l'indirizzo te lo chiediamo con la conferma</small></span></label>
-            <label class="scelta"><input type="radio" name="consegna" value="PostPac Priority"><span>PostPac Priority<small>Il giorno dopo · l'indirizzo te lo chiediamo con la conferma</small></span></label>
-          </div>
-          <label class="campo campo-largo"><span>Note <small>(a cosa serve, entro quando ti serve)</small></span>
-            <textarea name="note" rows="3"></textarea>
-          </label>
-          <label class="spunta campo-largo"><input type="checkbox" name="accetto" value="sì" required><span>Ho letto le <a href="#condizioni">condizioni</a> e la <a href="#privacy">privacy</a>. Il file è mio o ho il permesso di stamparlo.</span></label>
-        </fieldset>
-        <div class="modulo-fondo">
-          <button class="bottone bottone-grande" type="submit">Invia la richiesta</button>
-          <p class="modulo-stato" role="status" aria-live="polite"></p>
-        </div>
-      </div>
     </form>
   </section>
 
@@ -352,7 +324,7 @@
       <details><summary>Quanto costa la spedizione?</summary><p data-faq-spedizione>Spediamo con La Posta: PostPac Economy CHF 9.00 (2-3 giorni) o PostPac Priority CHF 10.50 (il giorno dopo). Da CHF 80 di spesa la spedizione è gratis.</p></details>
       <details><summary>Come si paga?</summary><p>Con Twint, PayPal o carta di credito/debito. Quando confermiamo l'ordine ti mandiamo la richiesta di pagamento o un link sicuro. La carta non la scrivi mai sul nostro sito.</p></details>
       <details><summary>Di che materiale sono?</summary><p>Di solito PLA, una plastica che si ottiene dall'amido di mais: leggera e resistente, ma sopra i 55 gradi circa si deforma (non lasciarla in macchina d'estate). Per i tuoi file puoi scegliere anche PETG, più resistente al caldo, o TPU, morbido come la gomma.</p></details>
-      <details><summary>Il prezzo del calcolatore è quello finale?</summary><p>È una stima fatta sul tuo file. Prima di stampare controlliamo il modello nel programma della stampante e ti confermiamo il prezzo esatto. Se cambia, decidi tu se andare avanti.</p></details>
+      <details><summary>Il prezzo del calcolatore è quello finale?</summary><p>Sì: il prezzo che vedi è quello che paghi. Prima di stampare controlliamo comunque il file: se c'è un problema (per esempio un pezzo che non si può stampare bene) ti scriviamo, e se hai già pagato ti ridiamo tutti i soldi.</p></details>
       <details><summary>Posso restituire un oggetto?</summary><p>Gli oggetti sono fatti apposta per te, quindi di solito non si possono restituire. Ma se arriva rotto o con un difetto di stampa, scrivici entro 14 giorni con una foto: lo ristampiamo gratis o ti ridiamo i soldi.</p></details>
       <details><summary>Potete stampare un file che ho già?</summary><p>Sì, caricalo nella pagina <a href="#carica">Carica file</a> (STL, 3MF, OBJ o STEP) e vedi subito il prezzo. Se pesa più di 8 MB mandaci un link. Non stampiamo armi, oggetti pericolosi o copie di marchi protetti.</p></details>
     </div>
@@ -410,7 +382,7 @@
       <input type="hidden" name="form-name" value="ordine">
       <p class="nascosto"><label>Non compilare: <input name="campo-trappola" tabindex="-1" autocomplete="off"></label></p>
       <input type="hidden" name="numero-ordine"><input type="hidden" name="articoli"><input type="hidden" name="subtotale"><input type="hidden" name="costo-spedizione"><input type="hidden" name="totale">
-      <input type="hidden" name="spedizione"><input type="hidden" name="pagamento">
+      <input type="hidden" name="spedizione"><input type="hidden" name="pagamento"><input type="hidden" name="file-online">
 
       <div class="cassa-moduli">
         <fieldset class="blocco">
@@ -506,7 +478,7 @@
         <h3>2. Ordini</h3>
         <p>Quando invii un ordine o una richiesta dal sito, ci fai una proposta. Il contratto è concluso quando ti confermiamo l'ordine per email. Se non possiamo stampare un oggetto, te lo diciamo e non paghi niente.</p>
         <h3>3. Prezzi</h3>
-        <p>Tutti i prezzi sono in franchi svizzeri (CHF) e sono prezzi finali. Il costo della spedizione è indicato alla cassa prima di inviare l'ordine. Per i file caricati, il prezzo del calcolatore è una stima: vale il prezzo che ti confermiamo per email.</p>
+        <p>Tutti i prezzi sono in franchi svizzeri (CHF) e sono prezzi finali. Il costo della spedizione è indicato alla cassa prima di inviare l'ordine. Per i file caricati vale il prezzo calcolato dal sito. Prima di stampare controlliamo il file: se non si può stampare bene ti avvisiamo, e se hai già pagato ti rimborsiamo tutto.</p>
         <h3>4. Pagamento</h3>
         <p>Paghi con Twint, PayPal o carta di credito/debito dopo la nostra conferma: ti mandiamo la richiesta di pagamento o un link sicuro. Spediamo quando il pagamento è arrivato. I dati della carta non passano mai dal nostro sito.</p>
         <h3>5. Consegna</h3>

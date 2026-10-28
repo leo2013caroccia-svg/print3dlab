@@ -22,6 +22,7 @@ Lo fa chi è *Owner* del progetto Supabase (l'amico), oppure Leo se ha il permes
 3. Cancella il codice di esempio, incolla **tutto** `supabase/functions/pagamento/index.ts` e premi **Deploy**.
 4. Apri la funzione → **Details / Settings** → spegni **Enforce JWT verification** (o "Verify JWT") → **Save**.
    *(Serve perché il sito e Stripe la chiamano senza login. La funzione controlla da sola da dove arrivano le richieste e la firma di Stripe.)*
+5. Per i **file caricati dai clienti** la funzione scarica il file dalla cartella privata e rifà il prezzo. Usa `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`, che Supabase dà già da solo a ogni funzione: non serve fare niente.
 
 ## 3. La chiave segreta (la copia il genitore)
 1. Stripe (in modalità test) → **Sviluppatori → Chiavi API** → copia la **Chiave segreta** (`sk_test_…`).

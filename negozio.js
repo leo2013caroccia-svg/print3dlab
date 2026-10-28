@@ -11,9 +11,11 @@ if(!Array.isArray(carrello)) carrello = [];
 const salvaCarrello = () => { try { localStorage.setItem(CHIAVE_CARRELLO, JSON.stringify(carrello)); } catch(e){} };
 
 const subtotale = () => carrello.reduce((s, r) => s + r.prezzo * r.quantita, 0);
-const pezziNelCarrello = () => carrello.reduce((s, r) => s + r.quantita, 0);
-const chiaveRiga = r => [r.id, r.misura, r.colore, r.scritta].join("|");
-const descrizioneRiga = r => [r.misura, r.colore, r.scritta ? `«${r.scritta}»` : ""].filter(Boolean).join(" · ");
+const pezziNelCarrello = () => carrello.reduce((s, r) => s + (r.tipo === "file" ? r.pezzi : r.quantita), 0);
+const chiaveRiga = r => [r.id, r.misura, r.colore, r.scritta, r.file].join("|");
+const descrizioneRiga = r => r.tipo === "file" ? r.dettagli : [r.misura, r.colore, r.scritta ? `«${r.scritta}»` : ""].filter(Boolean).join(" · ");
+// la foto nel carrello; per i file caricati un riquadro "3D"
+const fotoRiga = r => r.foto ? `<img src="foto/${r.foto}" alt="" loading="lazy">` : `<span class="riga-3d" aria-hidden="true">3D</span>`;
 
 // ---- catalogo: le sezioni ----
 const quantiModelli = s => `${s.modelli.length} ${s.modelli.length === 1 ? "modello" : "modelli"}`;
@@ -208,6 +210,13 @@ function aggiungiAlCarrello(riga){
   const n = $("[data-carrello-numero]");
   n.classList.remove("salta-su"); void n.offsetWidth; n.classList.add("salta-su");
 }
+// un file caricato dal calcolatore: una riga sola, il prezzo e' gia' per tutti i pezzi
+function aggiungiFileAlCarrello(d){
+  const riga = { tipo: "file", id: "file", nome: `Stampa di ${d.nomeFile}`, foto: "", quantita: 1, ...d };
+  carrello.push(riga);
+  salvaCarrello();
+  disegnaCarrello(chiaveRiga(riga));
+}
 
 function apriCarrello(){ disegnaCarrello(); apriDialogo($("#carrello")); }
 
@@ -233,16 +242,16 @@ function disegnaCarrello(nuova){
 
   $("[data-carrello-lista]", d).innerHTML = carrello.map((r, i) => `
     <li class="riga${chiaveRiga(r) === nuova ? " nuova" : ""}">
-      <img src="foto/${r.foto}" alt="" loading="lazy">
+      ${fotoRiga(r)}
       <div class="riga-testo">
         <p class="riga-nome">${sicuro(r.nome)}</p>
         <p class="riga-dettagli">${sicuro(descrizioneRiga(r))}</p>
         <div class="riga-comandi">
-          <div class="contatore contatore-piccolo">
+          ${r.tipo === "file" ? `<span class="riga-pezzi">${r.pezzi} ${r.pezzi === 1 ? "pezzo" : "pezzi"}</span>` : `<div class="contatore contatore-piccolo">
             <button type="button" data-riga-piu="-1" data-i="${i}" aria-label="Uno in meno">−</button>
             <span aria-live="polite">${r.quantita}</span>
             <button type="button" data-riga-piu="1" data-i="${i}" aria-label="Uno in più">+</button>
-          </div>
+          </div>`}
           <button type="button" class="riga-togli" data-riga-togli="${i}">Togli</button>
         </div>
       </div>
@@ -313,7 +322,7 @@ function disegnaCassa(){
 
   $("[data-riepilogo-lista]", m).innerHTML = carrello.map(r => `
     <li>
-      <span class="riepilogo-foto"><img src="foto/${r.foto}" alt=""><b>${r.quantita}</b></span>
+      <span class="riepilogo-foto">${fotoRiga(r)}<b>${r.tipo === "file" ? r.pezzi : r.quantita}</b></span>
       <span class="riepilogo-testo"><b>${sicuro(r.nome)}</b><small>${sicuro(descrizioneRiga(r))}</small></span>
       <span class="riepilogo-prezzo">${chf(r.prezzo * r.quantita)}</span>
     </li>`).join("");
@@ -345,6 +354,7 @@ async function inviaOrdine(e){
   m.elements["subtotale"].value = chf(sub);
   m.elements["costo-spedizione"].value = `${s.nome}: ${sped ? chf(sped) : "gratis"}`;
   m.elements["totale"].value = chf(sub + sped);
+  m.elements["file-online"].value = carrello.filter(r => r.tipo === "file").map(r => `${NEGOZIO.supabase.cartellaFile}/${r.file}`).join("\n");
 
   bottone.disabled = true;
   stato.className = "modulo-stato";
@@ -358,7 +368,9 @@ async function inviaOrdine(e){
     // ordine partito: pagina "grazie" e carrello vuoto
     const info = {
       numero, nome: m.elements["nome"].value.trim(), email: m.elements["email"].value.trim(), consegna: `Pacco con ${s.nome}`,
-      spedizione: s.id, articoli: carrello.map(r => ({ id: r.id, misura: r.misura, colore: r.colore, scritta: r.scritta, quantita: r.quantita })),
+      spedizione: s.id, articoli: carrello.map(r => r.tipo === "file"
+        ? { tipo: "file", file: r.file, materiale: r.materiale, qualita: r.qualita, riempimento: r.riempimento, scala: r.scala, colore: r.colore, pezzi: r.pezzi }
+        : { id: r.id, misura: r.misura, colore: r.colore, scritta: r.scritta, quantita: r.quantita }),
     };
     mostraGrazie(info, subito ? "vai" : "normale");
     carrello = []; salvaCarrello(); disegnaCarrello();

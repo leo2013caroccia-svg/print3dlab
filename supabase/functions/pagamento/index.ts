@@ -124,6 +124,158 @@ function prodottoDa(N, id){
   return null;
 }
 const centesimi = chf => Math.round(chf * 100);
+
+// ---------------------------------------------------------------------
+//  FILE CARICATI DAI CLIENTI: la funzione scarica il file dalla cartella privata
+//  e rifà il calcolo del prezzo (stesse formule di calcolatore.js)
+// ---------------------------------------------------------------------
+const SUPA = (Deno.env.get("SUPABASE_URL") || "").replace(/\/+$/, "");
+const SUPA_CHIAVE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SECRET_KEY") || "";
+async function scaricaFile(cartella, percorso){
+  const h = SUPA_CHIAVE.startsWith("eyJ") ? { apikey: SUPA_CHIAVE, Authorization: `Bearer ${SUPA_CHIAVE}` } : { apikey: SUPA_CHIAVE };
+  const r = await fetch(`${SUPA}/storage/v1/object/${cartella}/${percorso.split("/").map(encodeURIComponent).join("/")}`, { headers: h });
+  if(r.status === 400 || r.status === 404) throw new Errore("il file non c'e' piu': caricalo di nuovo");
+  if(!r.ok) throw new Error("file " + r.status);
+  return await r.arrayBuffer();
+}
+function statistiche(pos){
+  let vol = 0, area = 0;
+  const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+  for(let i = 0; i < pos.length; i += 9){
+    const ax = pos[i], ay = pos[i + 1], az = pos[i + 2];
+    const bx = pos[i + 3], by = pos[i + 4], bz = pos[i + 5];
+    const cx = pos[i + 6], cy = pos[i + 7], cz = pos[i + 8];
+    vol += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
+    const ux = bx - ax, uy = by - ay, uz = bz - az, vx = cx - ax, vy = cy - ay, vz = cz - az;
+    area += Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) / 2;
+  }
+  for(let i = 0; i < pos.length; i += 3)
+    for(let k = 0; k < 3; k++){ const v = pos[i + k]; if(v < min[k]) min[k] = v; if(v > max[k]) max[k] = v; }
+  return { volume: Math.abs(vol) / 6, area, misure: max.map((v, k) => v - min[k]) };
+}
+function leggiSTL(buf){
+  const dv = new DataView(buf);
+  if(buf.byteLength >= 84){
+    const n = dv.getUint32(80, true);
+    const testa = new TextDecoder().decode(new Uint8Array(buf, 0, Math.min(buf.byteLength, 300)));
+    const sembraTesto = /^\s*solid/.test(testa) && /facet|endsolid/.test(new TextDecoder().decode(new Uint8Array(buf, 0, Math.min(buf.byteLength, 4000))));
+    if(n > 0 && 84 + n * 50 <= buf.byteLength && !(sembraTesto && 84 + n * 50 !== buf.byteLength)){
+      const pos = new Float32Array(n * 9);
+      for(let i = 0; i < n; i++){
+        let o = 84 + i * 50 + 12;
+        for(let k = 0; k < 9; k++, o += 4) pos[i * 9 + k] = dv.getFloat32(o, true);
+      }
+      return pos;
+    }
+  }
+  const testo = new TextDecoder().decode(buf);
+  const re = /vertex\s+(\S+)\s+(\S+)\s+(\S+)/g, numeri = [];
+  let m;
+  while((m = re.exec(testo))) numeri.push(+m[1], +m[2], +m[3]);
+  return Float32Array.from(numeri.slice(0, numeri.length - numeri.length % 9));
+}
+function leggiOBJ(testo){
+  const v = [], out = [];
+  for(const riga of testo.split("\n")){
+    if(riga.startsWith("v ")){ const p = riga.trim().split(/\s+/); v.push(+p[1], -(+p[3]), +p[2]); }
+    else if(riga.startsWith("f ")){
+      const n = v.length / 3;
+      const p = riga.trim().split(/\s+/).slice(1).map(t => { const k = parseInt(t); return k < 0 ? n + k : k - 1; });
+      for(let j = 1; j + 1 < p.length; j++)
+        for(const k of [p[0], p[j], p[j + 1]]) out.push(v[k * 3], v[k * 3 + 1], v[k * 3 + 2]);
+    }
+  }
+  return Float32Array.from(out);
+}
+function vociZip(buf){
+  const dv = new DataView(buf);
+  let fine = -1;
+  for(let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--)
+    if(dv.getUint32(i, true) === 0x06054b50){ fine = i; break; }
+  if(fine < 0) throw new Error("zip");
+  const n = dv.getUint16(fine + 10, true);
+  let p = dv.getUint32(fine + 16, true);
+  const voci = [];
+  for(let k = 0; k < n && dv.getUint32(p, true) === 0x02014b50; k++){
+    const nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true);
+    voci.push({ nome: new TextDecoder().decode(new Uint8Array(buf, p + 46, nl)), metodo: dv.getUint16(p + 10, true), dimensione: dv.getUint32(p + 20, true), inizio: dv.getUint32(p + 42, true) });
+    p += 46 + nl + el + cl;
+  }
+  return voci;
+}
+async function estraiZip(buf, v){
+  const dv = new DataView(buf);
+  const nl = dv.getUint16(v.inizio + 26, true), el = dv.getUint16(v.inizio + 28, true);
+  const dati = new Uint8Array(buf, v.inizio + 30 + nl + el, v.dimensione);
+  if(v.metodo === 0) return new TextDecoder().decode(dati);
+  if(v.metodo === 8) return await new Response(new Blob([dati]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).text();
+  throw new Error("compressione");
+}
+const UNITA = { micron: 0.001, millimeter: 1, centimeter: 10, meter: 1000, inch: 25.4, foot: 304.8 };
+async function leggi3MF(buf){
+  const out = [];
+  const reX = /\bx="([^"]*)"/, reY = /\by="([^"]*)"/, reZ = /\bz="([^"]*)"/;
+  const re1 = /\bv1="(\d+)"/, re2 = /\bv2="(\d+)"/, re3 = /\bv3="(\d+)"/;
+  for(const voce of vociZip(buf).filter(v => /\.model$/i.test(v.nome))){
+    const xml = await estraiZip(buf, voce);
+    const u = /<model\b[^>]*\bunit="(\w+)"/.exec(xml);
+    const f = u ? (UNITA[u[1]] || 1) : 1;
+    for(const mesh of xml.matchAll(/<mesh\b[^>]*>([\s\S]*?)<\/mesh>/g)){
+      const v = [];
+      for(const a of mesh[1].matchAll(/<vertex\b([^>]*)>/g)) v.push(+reX.exec(a[1])[1] * f, +reY.exec(a[1])[1] * f, +reZ.exec(a[1])[1] * f);
+      for(const t of mesh[1].matchAll(/<triangle\b([^>]*)>/g))
+        for(const re of [re1, re2, re3]){ const k = +re.exec(t[1])[1] * 3; out.push(v[k], v[k + 1], v[k + 2]); }
+    }
+  }
+  return Float32Array.from(out);
+}
+// ATTENZIONE: uguale a prezzoStampa() in calcolatore.js
+function prezzoStampa(CAL, m, o){
+  const s = o.scala / 100;
+  const volume = m.volume * s ** 3 / 1000;
+  const area = m.area * s ** 2 / 100;
+  const guscio = Math.min(volume, area * 0.12);
+  const pieno = guscio + (volume - guscio) * o.riempimento.valore;
+  const grammi = pieno * o.materiale.densita * 1.08;
+  const ore = grammi / (o.qualita.grammiOra * o.materiale.velocita) + 0.15;
+  const materiale = grammi * CAL.prezzoGrammo * o.materiale.fattore;
+  const macchina = ore * CAL.prezzoOra;
+  const q = o.quantita;
+  const pezzi = (materiale + macchina) * q;
+  const sconto = q >= CAL.scontoDa ? pezzi * CAL.sconto : 0;
+  let totale = CAL.preparazione + pezzi - sconto;
+  totale = Math.max(CAL.minimo, Math.ceil(totale * 2) / 2);
+  const misure = m.misure.map(v => v * s);
+  return { grammi, ore, totale, misure, sta: misure.every(v => v <= CAL.piatto) };
+}
+const PERCORSO_FILE = /^\d{4}-\d{2}-\d{2}\/[a-z0-9]+-[a-z0-9]+-[A-Za-z0-9_-]+\.(stl|obj|3mf)$/i;
+async function rigaFile(N, a){
+  const CAL = N.stampa || {};
+  const percorso = testo(a.file, 200);
+  if(!PERCORSO_FILE.test(percorso)) throw new Errore("file sbagliato");
+  const materiale = (CAL.materiali || []).find(x => x.id === a.materiale);
+  const qualita = (CAL.qualita || []).find(x => x.id === a.qualita);
+  const riempimento = (CAL.riempimento || []).find(x => x.id === a.riempimento);
+  const colore = (N.colori || []).find(c => c.nome === a.colore);
+  const scala = Number(a.scala), pezzi = Math.floor(Number(a.pezzi));
+  if(!materiale || !qualita || !riempimento || !colore) throw new Errore("opzioni del file sbagliate");
+  if(!(scala >= 25 && scala <= 300) || !(pezzi >= 1 && pezzi <= 100)) throw new Errore("grandezza o pezzi sbagliati");
+  if(!SUPA || !SUPA_CHIAVE) throw new Error("manca SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY");
+  const buf = await scaricaFile((N.supabase || {}).cartellaFile || "file-clienti", percorso);
+  const est = percorso.split(".").pop().toLowerCase();
+  const pos = est === "stl" ? leggiSTL(buf) : est === "obj" ? leggiOBJ(new TextDecoder().decode(buf)) : await leggi3MF(buf);
+  if(!pos.length || pos.some(x => !isFinite(x))) throw new Errore("il file non si legge");
+  const st = prezzoStampa(CAL, statistiche(pos), { scala, materiale, qualita, riempimento, quantita: pezzi });
+  if(!st.sta) throw new Errore("il modello e' troppo grande per la stampante");
+  const nomeFile = percorso.split("/").pop().replace(/^[a-z0-9]+-[a-z0-9]+-/i, "");
+  return {
+    nome: `Stampa di ${nomeFile}`,
+    descrizione: [materiale.nome, qualita.nome, `riempimento ${riempimento.info}`, scala !== 100 ? `${scala}%` : "", colore.nome, `${pezzi} ${pezzi === 1 ? "pezzo" : "pezzi"}`].filter(Boolean).join(" · "),
+    prezzo: st.totale, quantita: 1,
+  };
+}
+// errore "gentile": il sito lo mostra cosi' com'e'
+class Errore extends Error {}
 const testo = (t, max) => String(t ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, max);
 
 // ---------------------------------------------------------------------
@@ -145,6 +297,16 @@ async function creaPagamento(req, origine){
   const righe = [];
   let subtotale = 0;
   for(const a of d.articoli){
+    if(a && a.tipo === "file"){
+      try {
+        const r = await rigaFile(N, a);
+        subtotale += r.prezzo; righe.push(r);
+      } catch(err){
+        if(err instanceof Errore) return json({ errore: err.message }, 400, origine);
+        throw err;
+      }
+      continue;
+    }
     const p = prodottoDa(N, a && a.id);
     if(!p) return json({ errore: "prodotto che non esiste: " + testo(a && a.id, 40) }, 400, origine);
     const quantita = Math.floor(Number(a.quantita));
