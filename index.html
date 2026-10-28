@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <!-- finche' il negozio non e' pronto: non mostrarlo su Google (togliere questa riga e robots.txt quando si apre) -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Print3DLab · Stampa 3D in Ticino</title>
+  <meta name="description" content="Regali, gadget e pezzi su misura stampati in 3D nel Locarnese. Scegli dal catalogo o carica il tuo file e vedi subito il prezzo. Spedizione in tutta la Svizzera.">
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="preload" href="caratteri/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="caratteri/figtree-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="vetrina/1-nido-ape.jpg" as="image" media="(min-width: 861px)" fetchpriority="high">
+  <link rel="preload" href="vetrina/1-nido-ape-telefono.jpg" as="image" media="(max-width: 860px)" fetchpriority="high">
+  <link rel="preload" href="vetrina/1-nido-ape-sfondo.jpg" as="image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='17' width='26' height='9' rx='3' fill='%23ff5b1f'/%3E%3Crect x='7' y='6' width='22' height='9' rx='3' fill='%23111112'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add("js","in-home")</script>
+  <!-- Foto: Pexels (licenza gratuita, uso commerciale permesso).
+       foto 30640195, 35063293, 35063298, 30620861, 16003896, 14158951, 33267278, 29148783 -->
+</head>
+<body class="in-apertura">
+<a class="salta" href="#prodotti">Vai ai prodotti</a>
+
+<header class="testata">
+  <a class="logo" href="#inizio" aria-label="Torna alla home">
+    <span class="logo-segno" aria-hidden="true"><i></i><i></i></span>
+    <span data-campo="nome">Print3DLab</span>
+  </a>
+  <nav class="testata-nav" aria-label="Menu principale">
+    <a href="#prodotti">Prodotti</a>
+    <a href="#prova">Provalo</a>
+    <a href="#come">Come funziona</a>
+    <a href="#su-misura">Su misura</a>
+    <a href="#domande">Domande</a>
+    <a href="#contatti">Contatti</a>
+  </nav>
+  <div class="testata-destra">
+    <a class="testata-carica" href="#carica" aria-label="Carica file"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Carica file</span></a>
+    <button class="testata-carrello" type="button" data-apri-carrello aria-label="Carrello, vuoto">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 4h2l2.2 10.2a1.5 1.5 0 001.5 1.2h7.9a1.5 1.5 0 001.5-1.1L20.5 8H6.6"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg>
+      <span class="carrello-numero" data-carrello-numero hidden>0</span>
+    </button>
+    <button class="hamburger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Apri il menu">
+      <span class="hamburger-righe" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="hamburger-testo">Menu</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== Menu a schermo intero ===== -->
+<div class="menu" id="menu" hidden>
+  <nav class="menu-voci" aria-label="Sezioni del sito">
+    <a href="#inizio"><span>00</span>Home</a>
+    <a href="#prodotti"><span>01</span>Prodotti</a>
+    <a href="#carica"><span>02</span>Carica file</a>
+    <a href="#prova"><span>03</span>Provalo</a>
+    <a href="#come"><span>04</span>Come funziona</a>
+    <a href="#su-misura"><span>05</span>Su misura</a>
+    <a href="#domande"><span>06</span>Domande</a>
+    <a href="#contatti"><span>07</span>Contatti</a>
+  </nav>
+  <div class="menu-lato">
+    <p class="etichetta etichetta-chiara">Scrivici</p>
+    <ul class="lista-email" data-email-lista></ul>
+    <p class="etichetta etichetta-chiara">Consegna e pagamento</p>
+    <p class="menu-info">Spediamo con La Posta in tutta la Svizzera.<br>Paghi con Twint, PayPal o carta.</p>
+    <a class="bottone bottone-chiaro" href="#prodotti">Vai al negozio</a>
+  </div>
+</div>
+
+<main id="inizio">
+
+  <!-- ===== Home: foto a tutto schermo che cambiano da sole ===== -->
+  <section class="vetrina" id="vetrina" data-pagina="home" aria-roledescription="carosello" aria-label="Oggetti stampati in 3D">
+    <h1 class="nascosto">Print3DLab: stampa 3D nel Locarnese</h1>
+    <div class="vetrina-immagini" id="vetrina-immagini"></div>
+    <div class="vetrina-comandi">
+      <span class="vd-numero" data-vd-numero aria-live="polite">01 / 06</span>
+      <div class="vetrina-barre" role="tablist" aria-label="Scegli la foto"></div>
+      <div class="vetrina-frecce">
+        <button type="button" class="freccia" data-vai="-1" aria-label="Foto precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button type="button" class="freccia" data-vai="1" aria-label="Foto successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Prodotti ===== -->
+  <section class="sezione" id="prodotti" data-pagina="prodotti">
+    <div class="testa-sezione rivela">
+      <div>
+        <p class="etichetta">01 / Negozio</p>
+        <h2>Cosa stampiamo</h2>
+      </div>
+      <p class="testa-lato">Scegli una sezione: dentro trovi tutti i modelli. Poi scegli colore e grandezza e aggiungi al carrello. Ogni pezzo lo stampiamo apposta per te sulle nostre Bambu Lab.</p>
+    </div>
+    <ul class="catalogo" id="catalogo"></ul>
+    <ul class="garanzie rivela">
+      <li><b>Fatto su ordinazione</b><span>Stampato apposta per te in 3-7 giorni</span></li>
+      <li><b>Paghi come vuoi</b><span>Twint, PayPal o carta</span></li>
+      <li><b>Spedizione gratis</b><span data-spedizione-gratis>Da CHF 80 di spesa</span></li>
+      <li><b>Arriva rotto?</b><span>Lo ristampiamo gratis</span></li>
+    </ul>
+    <p class="nota-foto" id="nota-foto" hidden>Le foto sono esempi di oggetti stampati in 3D. Presto le sostituiamo con le foto dei nostri pezzi.</p>
+  </section>
+
+  <!-- ===== Natale ===== -->
+  <section class="natale" data-pagina="prodotti" aria-labelledby="titolo-natale">
+    <div class="natale-foto rivela"><img src="foto/natale-pupazzo.jpg" alt="Pupazzi di neve stampati in 3D appena usciti dalla stampante" loading="lazy" decoding="async" width="900" height="1350"></div>
+    <div class="natale-testo rivela">
+      <p class="etichetta etichetta-chiara">Natale 2026</p>
+      <h2 id="titolo-natale">Un regalo con <em>il suo nome sopra.</em></h2>
+      <p>Decorazioni per l'albero, segnaposto per il pranzo e portachiavi da mettere sotto l'albero. Ognuno con il nome di chi lo riceve.</p>
+      <p class="natale-scadenza"><span class="punto"></span>Ordina entro il 10 dicembre per riceverlo in tempo.</p>
+      <a class="bottone bottone-chiaro" href="#sezione/natale">Vedi le decorazioni</a>
+    </div>
+  </section>
+
+  <!-- ===== Una sezione: tutti i suoi modelli (si riempie da negozio.js) ===== -->
+  <section class="sezione pagina-sezione" id="sezione" data-pagina="sezione">
+    <a class="sez-indietro" href="#prodotti">&larr; Tutte le sezioni</a>
+    <div class="testa-sezione">
+      <div>
+        <p class="etichetta" data-sez-etichetta>Sezione</p>
+        <h2 data-sez-nome>Modelli</h2>
+      </div>
+      <p class="testa-lato" data-sez-testo></p>
+    </div>
+    <nav class="sez-schede" data-sez-schede aria-label="Tutte le sezioni"></nav>
+    <ul class="catalogo modelli" id="modelli"></ul>
+    <p class="nota-foto" id="nota-modelli" hidden>Le foto di alcuni modelli arrivano presto. Se vuoi vederlo prima di ordinare, scrivici.</p>
+    <div class="sez-giro" data-sez-giro></div>
+  </section>
+
+  <!-- ===== Carica file + calcolatore ===== -->
+  <section class="sezione carica" id="carica" data-pagina="carica">
+    <div class="testa-sezione rivela">
+      <div>
+        <p class="etichetta">02 / Carica file</p>
+        <h2>Carica il modello, <em>vedi subito il prezzo.</em></h2>
+      </div>
+      <p class="testa-lato">Il calcolatore legge il tuo file STL, 3MF o OBJ, ti mostra il modello in 3D e stima peso, tempo di stampa e prezzo. Il prezzo finale te lo confermiamo noi entro un giorno.</p>
+    </div>
+
+    <form class="calcolo" name="file-da-stampare" method="POST" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="campo-trappola" id="modulo-file" novalidate>
+      <input type="hidden" name="form-name" value="file-da-stampare">
+      <p class="nascosto"><label>Non compilare: <input name="campo-trappola" tabindex="-1" autocomplete="off"></label></p>
+      <input type="hidden" name="materiale"><input type="hidden" name="qualita"><input type="hidden" name="riempimento"><input type="hidden" name="colore">
+      <input type="hidden" name="dimensioni"><input type="hidden" name="peso-stimato"><input type="hidden" name="tempo-stimato"><input type="hidden" name="prezzo-stimato"><input type="hidden" name="file-online">
+
+      <div class="calcolo-griglia">
+        <!-- il modello in 3D -->
+        <div class="visore" id="visore">
+          <label class="zona-file" id="zona-file">
+            <input type="file" name="file" id="campo-file" accept=".stl,.3mf,.obj,.step,.stp">
+            <span class="zona-icona" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0l-5 5m5-5l5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg></span>
+            <span class="zona-titolo" data-zona-titolo>Trascina qui il tuo file 3D</span>
+            <span class="zona-sotto" data-zona-sotto>oppure clicca per sceglierlo · STL, 3MF, OBJ o STEP · fino a 8 MB</span>
+          </label>
+          <canvas class="visore-tela" id="visore-tela" hidden aria-label="Anteprima 3D del modello. Trascina per girarlo."></canvas>
+          <div class="visore-barra" data-visore-barra hidden>
+            <span class="visore-nome" data-visore-nome></span>
+            <span class="visore-misure" data-visore-misure></span>
+            <button type="button" class="visore-cambia" data-visore-cambia>Cambia file</button>
+          </div>
+          <p class="visore-aiuto" data-visore-aiuto hidden>Trascina per girarlo · il quadrato è il piatto della stampante (25,6 cm)</p>
+          <p class="visore-avviso" data-visore-avviso role="status" hidden></p>
+        </div>
+
+        <!-- le scelte e il prezzo -->
+        <div class="pannello">
+          <div class="opzione">
+            <p class="opzione-titolo">Materiale</p>
+            <div class="segmenti" data-opzioni="materiali"></div>
+            <p class="opzione-info" data-info="materiali"></p>
+          </div>
+          <div class="opzione">
+            <p class="opzione-titolo">Qualità</p>
+            <div class="segmenti" data-opzioni="qualita"></div>
+          </div>
+          <div class="opzione">
+            <p class="opzione-titolo">Riempimento</p>
+            <div class="segmenti" data-opzioni="riempimento"></div>
+          </div>
+          <div class="opzione">
+            <label class="opzione-titolo" for="campo-scala">Grandezza <b data-scala-valore>100%</b></label>
+            <input class="cursore" id="campo-scala" name="scala" type="range" min="25" max="300" step="5" value="100">
+          </div>
+          <div class="opzione opzione-riga">
+            <div>
+              <p class="opzione-titolo">Colore <b data-colore-nome>Arancio</b></p>
+              <div class="pallini" data-pallini="colore-file"></div>
+            </div>
+            <div>
+              <p class="opzione-titolo">Pezzi</p>
+              <div class="contatore" data-contatore>
+                <button type="button" data-piu="-1" aria-label="Un pezzo in meno">−</button>
+                <input name="quantita" type="number" min="1" max="100" value="1" inputmode="numeric" aria-label="Quanti pezzi">
+                <button type="button" data-piu="1" aria-label="Un pezzo in più">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="conto" data-conto>
+            <dl class="conto-righe">
+              <div><dt>Peso stimato</dt><dd data-stima="peso">–</dd></div>
+              <div><dt>Tempo di stampa</dt><dd data-stima="tempo">–</dd></div>
+              <div><dt>Prezzo al pezzo</dt><dd data-stima="pezzo">–</dd></div>
+            </dl>
+            <div class="conto-totale">
+              <span>Totale indicativo</span>
+              <b data-stima="totale">–</b>
+            </div>
+            <p class="conto-nota" data-conto-nota>Carica un file STL, 3MF o OBJ per vedere il prezzo.</p>
+            <details class="conto-dettagli">
+              <summary>Come calcoliamo il prezzo</summary>
+              <div data-stima="dettagli"><p>Il prezzo dipende da quanto filamento serve (peso) e da quante ore lavora la stampante, più un costo fisso per preparare la stampa. Da 5 pezzi uguali c'è uno sconto.</p></div>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <div class="calcolo-dati">
+        <div class="calcolo-dati-testa">
+          <h3>Mandaci la richiesta</h3>
+          <p>Controlliamo il file e ti confermiamo prezzo e data per email. Non paghi niente adesso.</p>
+        </div>
+        <fieldset class="campi">
+          <label class="campo campo-largo"><span>Non hai il file? Incolla il link al modello <small>(MakerWorld, Printables, Thingiverse, Google Drive)</small></span>
+            <input name="link" id="campo-link" type="url" placeholder="https://" inputmode="url">
+          </label>
+          <label class="campo"><span>Nome</span><input name="nome" autocomplete="given-name" required></label>
+          <label class="campo"><span>Cognome</span><input name="cognome" autocomplete="family-name" required></label>
+          <label class="campo"><span>Email</span><input name="email" type="email" autocomplete="email" required></label>
+          <label class="campo"><span>Telefono <small>(facoltativo)</small></span><input name="telefono" type="tel" autocomplete="tel" inputmode="tel"></label>
+          <div class="scelte campo-largo" role="radiogroup" aria-label="Consegna">
+            <label class="scelta"><input type="radio" name="consegna" value="PostPac Economy" checked><span>PostPac Economy<small>2-3 giorni · l'indirizzo te lo chiediamo con la conferma</small></span></label>
+            <label class="scelta"><input type="radio" name="consegna" value="PostPac Priority"><span>PostPac Priority<small>Il giorno dopo · l'indirizzo te lo chiediamo con la conferma</small></span></label>
+          </div>
+          <label class="campo campo-largo"><span>Note <small>(a cosa serve, entro quando ti serve)</small></span>
+            <textarea name="note" rows="3"></textarea>
+          </label>
+          <label class="spunta campo-largo"><input type="checkbox" name="accetto" value="sì" required><span>Ho letto le <a href="#condizioni">condizioni</a> e la <a href="#privacy">privacy</a>. Il file è mio o ho il permesso di stamparlo.</span></label>
+        </fieldset>
+        <div class="modulo-fondo">
+          <button class="bottone bottone-grande" type="submit">Invia la richiesta</button>
+          <p class="modulo-stato" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===== Provalo ===== -->
+  <section class="sezione prova-sezione" id="prova" data-pagina="prova">
+    <div class="testa-sezione rivela">
+      <div>
+        <p class="etichetta">03 / Provalo</p>
+        <h2>Il tuo portachiavi, adesso</h2>
+      </div>
+      <p class="testa-lato">Scrivi un nome e scegli il colore: vedi subito come viene. Se ti piace, lo metti nel carrello con un clic.</p>
+    </div>
+
+    <div class="prova rivela">
+      <div class="prova-scena">
+        <svg class="portachiavi" viewBox="0 0 560 250" role="img" aria-label="Anteprima del portachiavi">
+          <defs>
+            <pattern id="righe-strati" width="6" height="5" patternUnits="userSpaceOnUse">
+              <rect width="6" height="1.6" fill="rgba(0,0,0,.09)"/>
+            </pattern>
+          </defs>
+          <g class="pc-anello" fill="none" stroke-width="7"><circle cx="0" cy="0" r="48"/></g>
+          <path class="pc-spessore"/>
+          <path class="pc-base"/>
+          <path class="pc-righe" fill="url(#righe-strati)"/>
+          <text class="pc-lettere-ombra" x="0" y="0">Leo</text>
+          <text class="pc-lettere" x="0" y="0">Leo</text>
+        </svg>
+        <p class="prova-misure"><span data-misura>7,2 cm</span> · PLA · spessore 4 mm</p>
+      </div>
+      <div class="prova-comandi">
+        <label class="prova-campo">
+          <span>Nome o scritta</span>
+          <input id="prova-nome" type="text" maxlength="12" value="Leo" autocomplete="off" spellcheck="false">
+        </label>
+        <div>
+          <p class="prova-titoletto">Colore: <b data-nome-colore>Arancio</b></p>
+          <div class="prova-colori" role="radiogroup" aria-label="Colore"></div>
+        </div>
+        <div class="prova-fondo">
+          <p class="prova-prezzo"><span data-prezzo-portachiavi>CHF 6.00</span> <small>al pezzo</small></p>
+          <button class="bottone" type="button" id="prova-ordina">Aggiungi al carrello</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Come funziona ===== -->
+  <section class="sezione-scura" id="come" data-pagina="come">
+    <div class="sezione">
+      <div class="testa-sezione rivela">
+        <div>
+          <p class="etichetta etichetta-chiara">04 / Come funziona</p>
+          <h2>Dall'ordine alle tue mani</h2>
+        </div>
+        <p class="testa-lato">Niente account e niente carta di credito. Ordini dal sito, noi confermiamo, stampiamo e te lo consegniamo.</p>
+      </div>
+      <ol class="passi rivela-gruppo">
+        <li><span class="passo-num">01</span><h3>Ordini</h3><p>Dal negozio o caricando il tuo file. Vedi subito quanto costa.</p></li>
+        <li><span class="passo-num">02</span><h3>Confermiamo</h3><p>Entro un giorno ti scriviamo per email con la data di consegna.</p></li>
+        <li><span class="passo-num">03</span><h3>Stampiamo</h3><p>Strato dopo strato sulle nostre Bambu Lab. Un portachiavi ci mette circa 40 minuti.</p></li>
+        <li><span class="passo-num">04</span><h3>Ricevi e paghi</h3><p>Ti arriva il pacco con La Posta. Paghi con Twint, PayPal o carta.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== Numeri ===== -->
+  <section class="numeri" data-pagina="come" aria-label="In breve">
+    <div class="numero rivela"><b>2</b><span>stampanti al lavoro ogni giorno</span></div>
+    <div class="numero rivela"><b>0,2<small>mm</small></b><span>lo spessore di ogni strato</span></div>
+    <div class="numero rivela"><b>8</b><span>colori tra cui scegliere</span></div>
+    <div class="numero rivela"><b>3-7</b><span>giorni dall'ordine alla consegna</span></div>
+  </section>
+
+  <!-- ===== Su misura ===== -->
+  <section class="sezione su-misura" id="su-misura" data-pagina="su-misura">
+    <div class="su-misura-foto rivela">
+      <img src="foto/su-misura.jpg" alt="Modellino di una casa stampato in 3D tenuto in mano" loading="lazy" decoding="async" width="1400" height="934">
+    </div>
+    <div class="su-misura-testo rivela">
+      <p class="etichetta">05 / Su misura</p>
+      <h2>Hai un'idea che non trovi qui?</h2>
+      <p>Disegniamo noi il modello 3D partendo da una foto, uno schizzo o due righe di spiegazione. Un pezzo di ricambio, un regalo per la squadra, il logo della tua attività.</p>
+      <ul class="spunte">
+        <li>Ti mandiamo prima un'immagine del modello</li>
+        <li>Stampiamo solo quando ti va bene</li>
+        <li>Preventivo gratis entro due giorni</li>
+      </ul>
+      <a class="bottone" href="#contatti" data-argomento="Preventivo su misura">Chiedi un preventivo</a>
+    </div>
+  </section>
+
+  <!-- ===== Domande ===== -->
+  <section class="sezione domande" id="domande" data-pagina="domande">
+    <div class="testa-sezione rivela">
+      <div>
+        <p class="etichetta">06 / Domande</p>
+        <h2>Domande frequenti</h2>
+      </div>
+    </div>
+    <div class="domande-lista rivela">
+      <details><summary>Quanto tempo ci vuole?</summary><p>Di solito da 3 a 7 giorni lavorativi, più 1-3 giorni se spediamo con La Posta. Per i regali di Natale ordina entro il 10 dicembre.</p></details>
+      <details><summary>Quanto costa la spedizione?</summary><p data-faq-spedizione>Spediamo con La Posta: PostPac Economy CHF 9.00 (2-3 giorni) o PostPac Priority CHF 10.50 (il giorno dopo). Da CHF 80 di spesa la spedizione è gratis.</p></details>
+      <details><summary>Come si paga?</summary><p>Con Twint, PayPal o carta di credito/debito. Quando confermiamo l'ordine ti mandiamo la richiesta di pagamento o un link sicuro. La carta non la scrivi mai sul nostro sito.</p></details>
+      <details><summary>Di che materiale sono?</summary><p>Di solito PLA, una plastica che si ottiene dall'amido di mais: leggera e resistente, ma sopra i 55 gradi circa si deforma (non lasciarla in macchina d'estate). Per i tuoi file puoi scegliere anche PETG, più resistente al caldo, o TPU, morbido come la gomma.</p></details>
+      <details><summary>Il prezzo del calcolatore è quello finale?</summary><p>È una stima fatta sul tuo file. Prima di stampare controlliamo il modello nel programma della stampante e ti confermiamo il prezzo esatto. Se cambia, decidi tu se andare avanti.</p></details>
+      <details><summary>Posso restituire un oggetto?</summary><p>Gli oggetti sono fatti apposta per te, quindi di solito non si possono restituire. Ma se arriva rotto o con un difetto di stampa, scrivici entro 14 giorni con una foto: lo ristampiamo gratis o ti ridiamo i soldi.</p></details>
+      <details><summary>Potete stampare un file che ho già?</summary><p>Sì, caricalo nella pagina <a href="#carica">Carica file</a> (STL, 3MF, OBJ o STEP) e vedi subito il prezzo. Se pesa più di 8 MB mandaci un link. Non stampiamo armi, oggetti pericolosi o copie di marchi protetti.</p></details>
+    </div>
+  </section>
+
+  <!-- ===== Contatti ===== -->
+  <section class="sezione contatti" id="contatti" data-pagina="contatti">
+    <div class="contatti-lato rivela">
+      <p class="etichetta">07 / Contatti</p>
+      <h2>Scrivici, <em>rispondiamo in un giorno.</em></h2>
+      <p>Per una domanda, un preventivo su misura o un ordine che hai già fatto.</p>
+      <dl class="ordina-info">
+        <div class="info-email"><dt>Email</dt><dd><ul class="lista-email" data-email-lista></ul></dd></div>
+        <div><dt>Spedizione</dt><dd>Svizzera e Liechtenstein</dd></div>
+        <div><dt>Pagamento</dt><dd>Twint, PayPal o carta</dd></div>
+      </dl>
+    </div>
+    <form class="modulo rivela" name="contatto" method="POST" data-netlify="true" netlify-honeypot="campo-trappola" id="modulo-contatto">
+      <input type="hidden" name="form-name" value="contatto">
+      <p class="nascosto"><label>Non compilare: <input name="campo-trappola" tabindex="-1" autocomplete="off"></label></p>
+      <fieldset class="campi">
+        <label class="campo"><span>Nome e cognome</span><input name="nome" autocomplete="name" required></label>
+        <label class="campo"><span>Email</span><input name="email" type="email" autocomplete="email" required></label>
+        <label class="campo campo-largo"><span>Di cosa si tratta?</span>
+          <select name="argomento" id="campo-argomento">
+            <option>Una domanda</option><option>Preventivo su misura</option><option>Un ordine che ho già fatto</option><option>Altro</option>
+          </select>
+        </label>
+        <label class="campo campo-largo"><span>Messaggio</span><textarea name="messaggio" rows="6" required></textarea></label>
+        <label class="spunta campo-largo"><input type="checkbox" name="accetto" value="sì" required><span>Ho letto la <a href="#privacy">privacy</a>.</span></label>
+      </fieldset>
+      <div class="modulo-fondo">
+        <button class="bottone bottone-grande" type="submit">Invia il messaggio</button>
+        <p class="modulo-stato" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===== Cassa ===== -->
+  <section class="sezione cassa" id="cassa" data-pagina="cassa">
+    <div class="cassa-testa">
+      <a class="cassa-indietro" href="#prodotti">← Continua gli acquisti</a>
+      <h2>Cassa</h2>
+      <ol class="cassa-passi" aria-label="Passaggi">
+        <li class="fatto">Carrello</li><li class="qui" aria-current="step">Dati e consegna</li><li>Conferma</li>
+      </ol>
+    </div>
+
+    <div class="cassa-vuota" data-cassa-vuota hidden>
+      <p>Il carrello è vuoto.</p>
+      <a class="bottone" href="#prodotti">Vai ai prodotti</a>
+    </div>
+
+    <form class="cassa-griglia" name="ordine" method="POST" data-netlify="true" netlify-honeypot="campo-trappola" id="modulo-ordine" novalidate>
+      <input type="hidden" name="form-name" value="ordine">
+      <p class="nascosto"><label>Non compilare: <input name="campo-trappola" tabindex="-1" autocomplete="off"></label></p>
+      <input type="hidden" name="numero-ordine"><input type="hidden" name="articoli"><input type="hidden" name="subtotale"><input type="hidden" name="costo-spedizione"><input type="hidden" name="totale">
+      <input type="hidden" name="spedizione"><input type="hidden" name="pagamento">
+
+      <div class="cassa-moduli">
+        <fieldset class="blocco">
+          <legend><span>1</span> Contatto</legend>
+          <div class="campi">
+            <label class="campo"><span>Email</span><input name="email" type="email" autocomplete="email" required></label>
+            <label class="campo"><span>Telefono <small>(per Twint e per il postino)</small></span><input name="telefono" type="tel" autocomplete="tel" inputmode="tel" required placeholder="079 123 45 67"></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="blocco">
+          <legend><span>2</span> Consegna</legend>
+          <div class="scelte scelte-colonna" data-spedizioni role="radiogroup" aria-label="Consegna"></div>
+          <div class="campi">
+            <label class="campo"><span>Nome</span><input name="nome" autocomplete="given-name" required></label>
+            <label class="campo"><span>Cognome</span><input name="cognome" autocomplete="family-name" required></label>
+          </div>
+          <div class="campi" data-indirizzo>
+            <label class="campo campo-largo"><span>Via e numero</span><input name="via" autocomplete="address-line1" required></label>
+            <label class="campo campo-largo"><span>Complemento <small>(c/o, appartamento, facoltativo)</small></span><input name="complemento" autocomplete="address-line2"></label>
+            <label class="campo campo-corto"><span>NPA</span><input name="npa" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="6600" required></label>
+            <label class="campo"><span>Località</span><input name="localita" autocomplete="address-level2" placeholder="Locarno" required></label>
+            <label class="campo campo-largo"><span>Paese</span>
+              <select name="paese" autocomplete="country-name"><option>Svizzera</option><option>Liechtenstein</option></select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="blocco">
+          <legend><span>3</span> Pagamento</legend>
+          <div class="scelte scelte-colonna" data-pagamenti role="radiogroup" aria-label="Pagamento"></div>
+          <p class="blocco-nota">Non chiediamo mai i dati della carta. Paghi solo dopo che abbiamo confermato l'ordine.</p>
+        </fieldset>
+
+        <fieldset class="blocco">
+          <legend><span>4</span> Ultime cose</legend>
+          <div class="campi">
+            <label class="campo campo-largo"><span>Note per noi <small>(facoltativo)</small></span><textarea name="note" rows="3"></textarea></label>
+            <label class="campo campo-largo"><span>Come ci hai conosciuto? <small>(facoltativo)</small></span>
+              <select name="conosciuto"><option value="">Scegli…</option><option>YouTube</option><option>Da un amico</option><option>Instagram o TikTok</option><option>Mercatino</option><option>Google</option><option>Altro</option></select>
+            </label>
+            <label class="spunta campo-largo"><input type="checkbox" name="accetto" value="sì" required><span>Ho letto e accetto le <a href="#condizioni">condizioni di vendita</a> e la <a href="#privacy">privacy</a>.</span></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <aside class="riepilogo" aria-label="Riepilogo dell'ordine">
+        <h3>Il tuo ordine</h3>
+        <ul class="riepilogo-lista" data-riepilogo-lista></ul>
+        <dl class="riepilogo-conti">
+          <div><dt>Subtotale</dt><dd data-conto="subtotale">–</dd></div>
+          <div><dt>Spedizione</dt><dd data-conto="spedizione">–</dd></div>
+          <div class="riepilogo-totale"><dt>Totale</dt><dd data-conto="totale">–</dd></div>
+        </dl>
+        <p class="riepilogo-nota">Prezzi finali in franchi svizzeri (CHF).</p>
+        <button class="bottone bottone-grande bottone-pieno" type="submit">Invia l'ordine</button>
+        <p class="modulo-stato" role="status" aria-live="polite"></p>
+        <p class="riepilogo-sicuro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Non paghi adesso: prima ti confermiamo l'ordine per email.</p>
+      </aside>
+    </form>
+
+    <div class="grazie" data-grazie hidden tabindex="-1">
+      <span class="grazie-segno" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>
+      <p class="etichetta">Ordine <b data-grazie-numero></b></p>
+      <h2>Grazie, <span data-grazie-nome></span>!</h2>
+      <p>Abbiamo ricevuto il tuo ordine. Entro un giorno ti scriviamo a <b data-grazie-email></b> per confermare la data e mandarti il pagamento.</p>
+      <ol class="grazie-passi">
+        <li><b>Oggi</b><span>Controlliamo l'ordine</span></li>
+        <li><b>Entro 1 giorno</b><span>Ti confermiamo per email</span></li>
+        <li><b>3-7 giorni</b><span>Stampiamo i tuoi pezzi</span></li>
+        <li><b>Consegna</b><span data-grazie-consegna>Pacco con La Posta</span></li>
+      </ol>
+      <a class="bottone" href="#inizio">Torna alla home</a>
+    </div>
+  </section>
+
+  <!-- ===== Note legali ===== -->
+  <section class="sezione legale" data-pagina="legale">
+    <div class="legale-indice">
+      <p class="etichetta">Note legali</p>
+      <a href="#condizioni">Condizioni di vendita</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#impressum">Impressum</a>
+    </div>
+    <div class="legale-testi">
+      <article id="condizioni">
+        <h2>Condizioni di vendita</h2>
+        <p class="legale-data">Aggiornate il 28 ottobre 2026</p>
+        <h3>1. Chi siamo</h3>
+        <p><span data-campo="nome">Print3DLab</span> è un piccolo laboratorio di stampa 3D nel Locarnese. I dati del responsabile sono nell'<a href="#impressum">Impressum</a>.</p>
+        <h3>2. Ordini</h3>
+        <p>Quando invii un ordine o una richiesta dal sito, ci fai una proposta. Il contratto è concluso quando ti confermiamo l'ordine per email. Se non possiamo stampare un oggetto, te lo diciamo e non paghi niente.</p>
+        <h3>3. Prezzi</h3>
+        <p>Tutti i prezzi sono in franchi svizzeri (CHF) e sono prezzi finali. Il costo della spedizione è indicato alla cassa prima di inviare l'ordine. Per i file caricati, il prezzo del calcolatore è una stima: vale il prezzo che ti confermiamo per email.</p>
+        <h3>4. Pagamento</h3>
+        <p>Paghi con Twint, PayPal o carta di credito/debito dopo la nostra conferma: ti mandiamo la richiesta di pagamento o un link sicuro. Spediamo quando il pagamento è arrivato. I dati della carta non passano mai dal nostro sito.</p>
+        <h3>5. Consegna</h3>
+        <p>Stampiamo in 3-7 giorni lavorativi dalla conferma. Spediamo con La Posta in Svizzera e nel Liechtenstein con PostPac Economy o Priority. Se il pacco si perde, ce ne occupiamo noi con La Posta.</p>
+        <h3>6. Resi e difetti</h3>
+        <p>In Svizzera non esiste un diritto di recesso generale per gli acquisti online, e i nostri oggetti sono fatti su misura o personalizzati: per questo non si possono restituire se hai cambiato idea. Se un oggetto arriva rotto o con un difetto di stampa, scrivici entro 14 giorni con una foto: lo ristampiamo gratis o ti rimborsiamo.</p>
+        <h3>7. File dei clienti</h3>
+        <p>Puoi caricare solo modelli che hai il diritto di stampare (tuoi, oppure con una licenza che lo permette). Non stampiamo armi, oggetti pericolosi o copie di marchi e personaggi protetti. Usiamo il tuo file solo per il tuo ordine.</p>
+        <h3>8. Uso degli oggetti</h3>
+        <p>Gli oggetti in PLA si deformano sopra i 55 °C circa e non sono adatti al contatto con il cibo. Non sono giocattoli per bambini sotto i 3 anni (pezzi piccoli).</p>
+        <h3>9. Diritto applicabile</h3>
+        <p>Vale il diritto svizzero.</p>
+      </article>
+
+      <article id="privacy">
+        <h2>Privacy</h2>
+        <p class="legale-data">Aggiornata il 28 ottobre 2026 · secondo la legge svizzera sulla protezione dei dati (LPD)</p>
+        <h3>Chi è responsabile</h3>
+        <p>Il responsabile dei tuoi dati è indicato nell'<a href="#impressum">Impressum</a>. Per qualsiasi domanda scrivi a <span data-email-tutte>la nostra email</span>.</p>
+        <h3>Quali dati raccogliamo e perché</h3>
+        <p>Solo quelli che ci mandi con i moduli: nome, cognome, email, telefono, indirizzo di consegna, i file 3D che carichi e i tuoi messaggi. Li usiamo per gestire il tuo ordine, consegnarlo, farti pagare e risponderti. Non li vendiamo e non li usiamo per pubblicità.</p>
+        <p>Contiamo anche le visite al sito, in modo anonimo: per ogni pagina aperta salviamo solo quale pagina, da quale sito arrivi, se usi telefono, tablet o computer e la lingua del browser. Niente nome, niente indirizzo IP, niente cookie: non possiamo sapere chi sei. Se il tuo browser chiede di non essere tracciato ("Do Not Track"), non contiamo niente.</p>
+        <h3>Chi altro li vede</h3>
+        <p>Il sito e i moduli sono gestiti da Netlify Inc. (Stati Uniti), che conserva i dati dei moduli per noi. I file 3D che carichi e il conteggio delle visite li conserviamo con Supabase, in una cartella privata che possiamo aprire solo noi. Se spediamo, diamo nome e indirizzo a La Posta Svizzera. Se paghi con Twint o PayPal (anche con la carta), il pagamento passa da loro: noi non vediamo i dati della carta.</p>
+        <h3>Cookie</h3>
+        <p>Non usiamo cookie. Le statistiche delle visite sono anonime (vedi sopra). Il carrello è salvato solo nel tuo browser, sul tuo dispositivo.</p>
+        <h3>Per quanto tempo</h3>
+        <p>Teniamo i dati finché servono per l'ordine e le eventuali garanzie. I file 3D li cancelliamo al più tardi 3 mesi dopo la consegna.</p>
+        <h3>I tuoi diritti</h3>
+        <p>Puoi chiederci in ogni momento quali dati abbiamo su di te, correggerli o cancellarli. Basta un'email.</p>
+      </article>
+
+      <article id="impressum">
+        <h2>Impressum</h2>
+        <dl class="impressum" data-impressum></dl>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<!-- pagina prima / pagina dopo (la riempie script.js) -->
+<nav class="giro" aria-label="Altre pagine" data-giro></nav>
+
+<footer class="piede">
+  <div class="piede-alto">
+    <p class="piede-frase">Hai in mente qualcosa?<br><a href="#carica">Stampiamolo.</a></p>
+    <div class="piede-colonne">
+      <div>
+        <p class="etichetta etichetta-chiara">Scrivici</p>
+        <ul class="lista-email" data-email-lista></ul>
+      </div>
+      <div>
+        <p class="etichetta etichetta-chiara">Negozio</p>
+        <div class="piede-link">
+          <a href="#prodotti">Prodotti</a>
+          <a href="#carica">Carica file</a>
+          <a href="#contatti">Contatti</a>
+          <a data-campo-href="youtube" href="#" target="_blank" rel="noopener">YouTube</a>
+        </div>
+      </div>
+      <div>
+        <p class="etichetta etichetta-chiara">Legale</p>
+        <div class="piede-link">
+          <a href="#condizioni">Condizioni di vendita</a>
+          <a href="#privacy">Privacy</a>
+          <a href="#impressum">Impressum</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="piede-marchio" data-campo="nome" aria-hidden="true">Print3DLab</p>
+  <p class="piede-basso">© 2026 <span data-campo="nome">Print3DLab</span> · Stampa 3D in Ticino · Prezzi in franchi svizzeri · Pagamento con Twint, PayPal o carta</p>
+</footer>
+
+<!-- ===== Scheda di un prodotto ===== -->
+<dialog class="scheda" id="scheda" aria-labelledby="scheda-titolo">
+  <form method="dialog" class="scheda-dentro" data-scheda-modulo>
+    <button class="chiudi" type="button" data-chiudi aria-label="Chiudi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="scheda-foto"><img data-scheda-foto alt="" decoding="async"><span class="foto-vuota" data-scheda-vuota hidden aria-hidden="true"><b data-scheda-iniziale></b><small>Foto in arrivo</small></span></div>
+    <div class="scheda-testo">
+      <p class="scheda-segno" data-scheda-segno></p>
+      <h2 id="scheda-titolo" data-scheda-nome></h2>
+      <p class="scheda-prezzo" data-scheda-prezzo></p>
+      <p class="scheda-descrizione" data-scheda-testo></p>
+      <div class="scheda-scelte">
+        <div class="opzione" data-scheda-misure-box>
+          <p class="opzione-titolo">Grandezza</p>
+          <div class="segmenti" data-scheda-misure></div>
+        </div>
+        <div class="opzione">
+          <p class="opzione-titolo">Colore <b data-scheda-colore-nome></b></p>
+          <div class="pallini" data-pallini="colore-scheda"></div>
+        </div>
+        <label class="campo" data-scheda-scritta-box><span data-scheda-scritta-etichetta>Nome o scritta</span>
+          <input name="scritta" data-scheda-scritta maxlength="20" autocomplete="off" spellcheck="false">
+        </label>
+        <div class="scheda-riga">
+          <div class="contatore" data-contatore>
+            <button type="button" data-piu="-1" aria-label="Uno in meno">−</button>
+            <input name="quantita" type="number" min="1" max="50" value="1" inputmode="numeric" aria-label="Quanti">
+            <button type="button" data-piu="1" aria-label="Uno in più">+</button>
+          </div>
+          <button class="bottone bottone-grande bottone-pieno" type="submit" data-scheda-aggiungi>Aggiungi al carrello</button>
+        </div>
+      </div>
+      <ul class="scheda-info">
+        <li>Stampato apposta per te in 3-7 giorni</li>
+        <li>Spedizione con La Posta, gratis da CHF 80</li>
+        <li data-scheda-dettagli></li>
+      </ul>
+    </div>
+  </form>
+</dialog>
+
+<!-- ===== Carrello ===== -->
+<dialog class="carrello" id="carrello" aria-labelledby="carrello-titolo">
+  <div class="carrello-dentro">
+    <div class="carrello-testa">
+      <h2 id="carrello-titolo">Carrello <span data-carrello-conta></span></h2>
+      <button class="chiudi" type="button" data-chiudi aria-label="Chiudi il carrello"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="carrello-gratis" data-carrello-gratis></div>
+    <ul class="carrello-lista" data-carrello-lista></ul>
+    <div class="carrello-vuoto" data-carrello-vuoto>
+      <p>Il carrello è vuoto.</p>
+      <a class="bottone" href="#prodotti" data-chiudi>Vai ai prodotti</a>
+    </div>
+    <div class="carrello-fondo" data-carrello-fondo>
+      <div class="carrello-subtotale"><span>Subtotale</span><b data-carrello-subtotale>CHF 0.00</b></div>
+      <p>Spedizione e pagamento li scegli alla cassa.</p>
+      <a class="bottone bottone-grande bottone-pieno" href="#cassa" data-chiudi>Vai alla cassa</a>
+    </div>
+  </div>
+</dialog>
+
+<script src="script.js"></script>
+<script src="negozio.js"></script>
+<script src="supabase.js"></script>
+<script src="calcolatore.js"></script>
+</body>
+</html>

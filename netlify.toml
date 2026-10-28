@@ -1,0 +1,16 @@
+# Netlify pubblica questa cartella cosi' com'e' (niente build)
+[build]
+  publish = "."
+
+# questi file servono solo a voi: online danno "pagina non trovata"
+[[redirects]]
+  from = "/supabase-installazione.sql"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/LEGGIMI.md"
+  to = "/404.html"
+  status = 404
+  force = true
