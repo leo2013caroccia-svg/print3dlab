@@ -15,6 +15,10 @@ const NEGOZIO = {
   // La chiave "secret" / "service_role" NON va MAI qui: questo file lo puo' leggere chiunque.
   supabase: { url: "https://psnfyxwlpasawkcxrzpe.supabase.co", chiave: "sb_publishable_xXLOvdKD6vJjFlQGQ1IwVA_LM21sOmX", cartellaFile: "file-clienti", maxMB: 50 },
 
+  // ---- email quando arriva un ordine, un file o un messaggio (gratis, con Google Apps Script) ----
+  // Incolla qui l'indirizzo della "App web" di Google Apps Script (finisce con /exec). Vuoto = niente email.
+  avvisiEmail: "https://script.google.com/macros/s/AKfycby_VlbOZmnlM6etJGYq5FZWasllfm1StIWZtSEwTttWiV4vSSHyntZbrzH-TZacCZfJxg/exec",
+
   // chi risponde per il negozio (Impressum). Siete minorenni: qui vanno i dati di un genitore.
   responsabile: { nome: "", indirizzo: "", localita: "" },
 
@@ -551,6 +555,22 @@ async function inviaModulo(modulo, dati){
     ? { method: "POST", body: dati }
     : { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams(dati).toString() });
   if(!r.ok) throw new Error(r.status);
+  avvisaPerEmail(dati);
+}
+
+// ---- manda anche un'email a voi due (Google Apps Script). Se non va, l'ordine resta comunque su Netlify ----
+function avvisaPerEmail(dati){
+  if(!NEGOZIO.avvisiEmail) return;
+  const campi = {};
+  for(const [k, v] of dati.entries()) if(typeof v === "string") campi[k] = v; // i file no: quelli vanno su Supabase
+  if(campi["campo-trappola"]) return; // spam
+  fetch(NEGOZIO.avvisiEmail, {
+    method: "POST",
+    mode: "no-cors", // Google non risponde al sito: va bene, basta che l'email parta
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(campi),
+    keepalive: true,
+  }).catch(() => {});
 }
 
 // controlla i campi obbligatori e porta al primo sbagliato
