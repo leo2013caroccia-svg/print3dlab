@@ -23,3 +23,6 @@ Netlify aggiorna il sito da solo in circa un minuto.
 ## Supabase
 - File 3D dei clienti: Supabase > Storage > `file-clienti`.
 - Visite: Supabase > SQL Editor (le domande sono in fondo a `supabase-installazione.sql`).
+
+## Pagamenti online (Stripe)
+Tutti i passi sono in `STRIPE.md`. Le chiavi segrete di Stripe NON vanno mai nei file: solo nei Secrets di Supabase.

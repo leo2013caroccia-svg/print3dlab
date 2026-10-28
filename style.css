@@ -356,6 +356,7 @@ body.menu-aperto .menu-lato{opacity:1}
 .modulo-stato{font-weight:600}
 .modulo-stato.ok{color:#14804e}
 .modulo-stato.errore{color:#c2341b}
+.grazie [data-grazie-stato]:empty{display:none}
 
 /* --- Domande --- */
 .domande-lista{border-top:1px solid var(--inchiostro)}

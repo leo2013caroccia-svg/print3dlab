@@ -468,7 +468,7 @@
         <p class="riepilogo-nota">Prezzi finali in franchi svizzeri (CHF).</p>
         <button class="bottone bottone-grande bottone-pieno" type="submit">Invia l'ordine</button>
         <p class="modulo-stato" role="status" aria-live="polite"></p>
-        <p class="riepilogo-sicuro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Non paghi adesso: prima ti confermiamo l'ordine per email.</p>
+        <p class="riepilogo-sicuro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-riepilogo-sicuro>Non paghi adesso: prima ti confermiamo l'ordine per email.</span></p>
       </aside>
     </form>
 
@@ -476,7 +476,9 @@
       <span class="grazie-segno" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>
       <p class="etichetta">Ordine <b data-grazie-numero></b></p>
       <h2>Grazie, <span data-grazie-nome></span>!</h2>
-      <p>Abbiamo ricevuto il tuo ordine. Entro un giorno ti scriviamo a <b data-grazie-email></b> per confermare la data e mandarti il pagamento.</p>
+      <p data-grazie-testo>Abbiamo ricevuto il tuo ordine. Entro un giorno ti scriviamo a <b data-grazie-email></b> per confermare la data e mandarti il pagamento.</p>
+      <p class="modulo-stato" data-grazie-stato role="status" aria-live="polite"></p>
+      <button class="bottone bottone-grande bottone-pieno" type="button" data-grazie-riprova hidden>Riprova a pagare</button>
       <ol class="grazie-passi">
         <li><b>Oggi</b><span>Controlliamo l'ordine</span></li>
         <li><b>Entro 1 giorno</b><span>Ti confermiamo per email</span></li>
@@ -528,7 +530,7 @@
         <p>Solo quelli che ci mandi con i moduli: nome, cognome, email, telefono, indirizzo di consegna, i file 3D che carichi e i tuoi messaggi. Li usiamo per gestire il tuo ordine, consegnarlo, farti pagare e risponderti. Non li vendiamo e non li usiamo per pubblicità.</p>
         <p>Contiamo anche le visite al sito, in modo anonimo: per ogni pagina aperta salviamo solo quale pagina, da quale sito arrivi, se usi telefono, tablet o computer e la lingua del browser. Niente nome, niente indirizzo IP, niente cookie: non possiamo sapere chi sei. Se il tuo browser chiede di non essere tracciato ("Do Not Track"), non contiamo niente.</p>
         <h3>Chi altro li vede</h3>
-        <p>Il sito e i moduli sono gestiti da Netlify Inc. (Stati Uniti), che conserva i dati dei moduli per noi. I file 3D che carichi e il conteggio delle visite li conserviamo con Supabase, in una cartella privata che possiamo aprire solo noi. Quando ci mandi un ordine o un messaggio, ce ne arriva anche una copia per email (con Google Gmail). Se spediamo, diamo nome e indirizzo a La Posta Svizzera. Se paghi con Twint o PayPal (anche con la carta), il pagamento passa da loro: noi non vediamo i dati della carta.</p>
+        <p>Il sito e i moduli sono gestiti da Netlify Inc. (Stati Uniti), che conserva i dati dei moduli per noi. I file 3D che carichi e il conteggio delle visite li conserviamo con Supabase, in una cartella privata che possiamo aprire solo noi. Se paghi online, il pagamento lo gestisce Stripe: i dati della carta li vede solo Stripe, noi mai. Quando ci mandi un ordine o un messaggio, ce ne arriva anche una copia per email (con Google Gmail). Se spediamo, diamo nome e indirizzo a La Posta Svizzera. Se paghi con Twint o PayPal (anche con la carta), il pagamento passa da loro: noi non vediamo i dati della carta.</p>
         <h3>Cookie</h3>
         <p>Non usiamo cookie. Le statistiche delle visite sono anonime (vedi sopra). Il carrello è salvato solo nel tuo browser, sul tuo dispositivo.</p>
         <h3>Per quanto tempo</h3>

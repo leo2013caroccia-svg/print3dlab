@@ -276,6 +276,9 @@ function avviaCarrello(){
 //  CASSA
 // =====================================================================
 const cassa = () => $("#modulo-ordine");
+const stripeAttivo = () => !!(NEGOZIO.stripe && NEGOZIO.stripe.attivo && NEGOZIO.stripe.funzione);
+const pagamentoScelto = () => NEGOZIO.pagamenti.find(p => p.id === (cassa().querySelector('[name="scelta-pagamento"]:checked') || {}).dataset?.id) || NEGOZIO.pagamenti[0];
+const pagaSubito = p => stripeAttivo() && !!p.online;
 const spedizioneScelta = () => NEGOZIO.spedizioni.find(s => s.id === (cassa().querySelector('[name="scelta-spedizione"]:checked') || {}).value) || NEGOZIO.spedizioni[0];
 function costoSpedizione(s){
   if(!s.prezzo) return 0;
@@ -287,8 +290,8 @@ function avviaCassa(){
   $("[data-spedizioni]", m).innerHTML = NEGOZIO.spedizioni.map((s, i) => `
     <label class="scelta"><input type="radio" name="scelta-spedizione" value="${s.id}"${i === 0 ? " checked" : ""}><span>${s.nome}<small>${s.info}</small><em data-prezzo-spedizione="${s.id}"></em></span></label>`).join("");
   $("[data-pagamenti]", m).innerHTML = NEGOZIO.pagamenti.map((p, i) => `
-    <label class="scelta"><input type="radio" name="scelta-pagamento" value="${p.nome}"${i === 0 ? " checked" : ""}><span>${p.nome}<small>${p.info}</small></span></label>`).join("");
-  m.addEventListener("change", e => { if(e.target.name === "scelta-spedizione") disegnaCassa(); });
+    <label class="scelta"><input type="radio" name="scelta-pagamento" value="${p.nome}" data-id="${p.id}"${i === 0 ? " checked" : ""}><span>${p.nome}<small>${pagaSubito(p) ? p.infoOnline || p.info : p.info}</small></span></label>`).join("");
+  m.addEventListener("change", e => { if(e.target.name === "scelta-spedizione" || e.target.name === "scelta-pagamento") disegnaCassa(); });
   $("[name=npa]", m).addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g, ""); });
   m.addEventListener("submit", inviaOrdine);
   pagine.quandoCambia.push(p => { if(p === "cassa") disegnaCassa(); });
@@ -318,6 +321,12 @@ function disegnaCassa(){
   $('[data-conto="subtotale"]', m).textContent = chf(sub);
   $('[data-conto="spedizione"]', m).textContent = sped ? chf(sped) : "Gratis";
   $('[data-conto="totale"]', m).textContent = chf(sub + sped);
+  // con Stripe si paga subito, altrimenti vi mandate voi il link
+  const subito = pagaSubito(pagamentoScelto());
+  $("[data-riepilogo-sicuro]", m).textContent = subito
+    ? "Paghi subito sulla pagina sicura di Stripe. La carta non passa mai dal nostro sito."
+    : "Non paghi adesso: prima ti confermiamo l'ordine per email.";
+  $("button[type=submit]", m).textContent = subito ? `Ordina e paga · ${chf(sub + sped)}` : "Invia l'ordine";
 }
 
 function numeroOrdine(){
@@ -330,6 +339,7 @@ async function inviaOrdine(e){
   const m = cassa(), stato = $(".modulo-stato", m), bottone = $("button[type=submit]", m);
   if(!carrello.length || !campiOk(m)) return;
   const s = spedizioneScelta(), sub = subtotale(), sped = costoSpedizione(s), numero = numeroOrdine();
+  const pag = pagamentoScelto(), subito = pagaSubito(pag);
   m.elements["numero-ordine"].value = numero;
   m.elements["articoli"].value = carrello.map(r => `${r.quantita} × ${r.nome}${descrizioneRiga(r) ? " (" + descrizioneRiga(r) + ")" : ""} = ${chf(r.prezzo * r.quantita)}`).join("\n");
   m.elements["subtotale"].value = chf(sub);
@@ -341,22 +351,18 @@ async function inviaOrdine(e){
   stato.textContent = "Invio in corso…";
   const dati = new FormData(m);
   dati.set("spedizione", s.nome);
-  dati.set("pagamento", (m.querySelector('[name="scelta-pagamento"]:checked') || {}).value || "");
+  dati.set("pagamento", subito ? `${pag.nome} · online con Stripe (controlla che sia pagato)` : pag.nome);
   dati.delete("scelta-spedizione"); dati.delete("scelta-pagamento");
   try {
     await inviaModulo(m, dati);
     // ordine partito: pagina "grazie" e carrello vuoto
-    const g = $("[data-grazie]");
-    $("[data-grazie-numero]", g).textContent = numero;
-    $("[data-grazie-nome]", g).textContent = m.elements["nome"].value.trim();
-    $("[data-grazie-email]", g).textContent = m.elements["email"].value.trim();
-    $("[data-grazie-consegna]", g).textContent = `Pacco con ${s.nome}`;
-    m.hidden = true;
-    $(".cassa-testa").hidden = true;
-    g.hidden = false;
-    g.focus({ preventScroll: true });
-    scrollTo({ top: 0, behavior: "instant" });
+    const info = {
+      numero, nome: m.elements["nome"].value.trim(), email: m.elements["email"].value.trim(), consegna: `Pacco con ${s.nome}`,
+      spedizione: s.id, articoli: carrello.map(r => ({ id: r.id, misura: r.misura, colore: r.colore, scritta: r.scritta, quantita: r.quantita })),
+    };
+    mostraGrazie(info, subito ? "vai" : "normale");
     carrello = []; salvaCarrello(); disegnaCarrello();
+    if(subito){ ricordaPagamento(info); vaiAStripe(info); }
     m.reset();
     stato.textContent = "";
   } catch(err){
@@ -364,6 +370,72 @@ async function inviaOrdine(e){
     stato.innerHTML = `Non è partito. Riprova tra un attimo o scrivici a ${linkEmail()}.`;
   }
   bottone.disabled = false;
+}
+
+// ---- la pagina "grazie": dopo l'ordine, e quando si torna da Stripe ----
+const TESTI_GRAZIE = {
+  normale: e => `Abbiamo ricevuto il tuo ordine. Entro un giorno ti scriviamo a <b>${e}</b> per confermare la data e mandarti il pagamento.`,
+  vai: e => `Abbiamo ricevuto il tuo ordine. Adesso ti portiamo alla pagina di pagamento. La conferma arriva a <b>${e}</b>.`,
+  pagato: e => `Pagamento ricevuto, grazie! Entro un giorno ti scriviamo a <b>${e}</b> per confermare la data di spedizione.`,
+  annullato: e => `Il pagamento non è stato fatto, ma il tuo ordine è salvato. Puoi riprovare qui sotto, oppure ti mandiamo noi il link per pagare a <b>${e}</b>.`,
+};
+function mostraGrazie(info, modo){
+  const g = $("[data-grazie]"), m = cassa();
+  $("[data-grazie-numero]", g).textContent = info.numero;
+  $("[data-grazie-nome]", g).textContent = info.nome || "";
+  $("[data-grazie-nome]", g).parentNode.firstChild.textContent = info.nome ? "Grazie, " : "Grazie";
+  $("[data-grazie-testo]", g).innerHTML = TESTI_GRAZIE[modo](sicuro(info.email || "la tua email"));
+  $("[data-grazie-consegna]", g).textContent = info.consegna || "Pacco con La Posta";
+  $("[data-grazie-stato]", g).textContent = "";
+  $("[data-grazie-riprova]", g).hidden = !(modo === "annullato" && info.articoli);
+  m.hidden = true;
+  $("[data-cassa-vuota]").hidden = true;
+  $(".cassa-testa").hidden = true;
+  g.hidden = false;
+  g.focus({ preventScroll: true });
+  scrollTo({ top: 0, behavior: "instant" });
+}
+
+// l'ordine da pagare resta in memoria in questa scheda, per quando si torna da Stripe
+const CHIAVE_PAGAMENTO = "print3dlab-pagamento";
+const ricordaPagamento = info => { try { sessionStorage.setItem(CHIAVE_PAGAMENTO, JSON.stringify(info)); } catch(e){} };
+function pagamentoRicordato(numero){
+  try { const i = JSON.parse(sessionStorage.getItem(CHIAVE_PAGAMENTO)); return i && i.numero === numero ? i : null; } catch(e){ return null; }
+}
+
+// chiede alla funzione su Supabase di aprire la pagina di Stripe (il prezzo lo calcola lei)
+async function vaiAStripe(info){
+  const g = $("[data-grazie]"), stato = $("[data-grazie-stato]", g), riprova = $("[data-grazie-riprova]", g);
+  stato.className = "modulo-stato";
+  stato.textContent = "Apro la pagina di pagamento…";
+  riprova.disabled = true;
+  try {
+    const r = await fetch(NEGOZIO.stripe.funzione, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ numero: info.numero, email: info.email, spedizione: info.spedizione, articoli: info.articoli }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if(!r.ok || !d.url) throw new Error(d.errore || r.status);
+    location.href = d.url;
+  } catch(err){
+    stato.classList.add("errore");
+    stato.innerHTML = `Il pagamento online non è partito. Niente paura: l'ordine è salvato e ti mandiamo il link per pagare per email. Domande? ${linkEmail()}`;
+    riprova.hidden = false;
+    riprova.disabled = false;
+  }
+}
+
+// tornando da Stripe l'indirizzo e' /?pagato=P3D-...#cassa oppure /?annullato=P3D-...#cassa
+function ritornoDaStripe(){
+  const q = new URLSearchParams(location.search);
+  const numero = q.get("pagato") || q.get("annullato");
+  if(!numero || !/^P3D-\d{6}-\d{4}$/.test(numero)) return;
+  history.replaceState(null, "", location.pathname + "#cassa");
+  const info = pagamentoRicordato(numero) || { numero };
+  if(q.get("pagato")){
+    try { sessionStorage.removeItem(CHIAVE_PAGAMENTO); } catch(e){}
+    mostraGrazie(info, "pagato");
+  } else mostraGrazie(info, "annullato");
 }
 
 // se torni alla cassa dopo un ordine, si riparte da capo
@@ -381,3 +453,5 @@ avviaScheda();
 avviaCarrello();
 avviaCassa();
 avviaGrazie();
+$("[data-grazie-riprova]").addEventListener("click", () => { const i = pagamentoRicordato($("[data-grazie-numero]").textContent); if(i) vaiAStripe(i); });
+ritornoDaStripe();

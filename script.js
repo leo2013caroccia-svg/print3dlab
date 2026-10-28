@@ -19,6 +19,11 @@ const NEGOZIO = {
   // Incolla qui l'indirizzo della "App web" di Google Apps Script (finisce con /exec). Vuoto = niente email.
   avvisiEmail: "https://script.google.com/macros/s/AKfycby_VlbOZmnlM6etJGYq5FZWasllfm1StIWZtSEwTttWiV4vSSHyntZbrzH-TZacCZfJxg/exec",
 
+  // ---- pagamento online con Stripe (carta e Twint subito, sulla pagina sicura di Stripe) ----
+  // Come si accende: guarda STRIPE.md. attivo: false = come adesso, vi mandate voi il link per pagare.
+  // Qui NON va nessuna chiave di Stripe: quelle stanno solo nei "Secrets" di Supabase.
+  stripe: { attivo: false, funzione: "https://psnfyxwlpasawkcxrzpe.supabase.co/functions/v1/pagamento" },
+
   // chi risponde per il negozio (Impressum). Siete minorenni: qui vanno i dati di un genitore.
   responsabile: { nome: "", indirizzo: "", localita: "" },
 
@@ -28,10 +33,13 @@ const NEGOZIO = {
     { id: "priority", nome: "PostPac Priority", info: "La Posta · il giorno lavorativo dopo", prezzo: 10.50 },
   ],
   spedizioneGratisDa: 80, // da questa spesa la posta la paghiamo noi (0 = mai gratis)
+  // online: true = quando Stripe e' attivo si paga subito (e si vede infoOnline invece di info)
   pagamenti: [
-    { id: "twint", nome: "Twint", info: "Ti mandiamo la richiesta di pagamento con la conferma" },
+    { id: "twint", nome: "Twint", info: "Ti mandiamo la richiesta di pagamento con la conferma",
+      online: true, infoOnline: "Paghi subito con l'app Twint, sulla pagina sicura di Stripe" },
     { id: "paypal", nome: "PayPal", info: "Ti mandiamo il link PayPal con la conferma" },
-    { id: "carta", nome: "Carta di credito o debito", info: "Visa o Mastercard: ti mandiamo un link di pagamento sicuro. La carta non la scrivi mai sul nostro sito" },
+    { id: "carta", nome: "Carta di credito o debito", info: "Visa o Mastercard: ti mandiamo un link di pagamento sicuro. La carta non la scrivi mai sul nostro sito",
+      online: true, infoOnline: "Visa, Mastercard, Apple Pay o Google Pay: paghi subito sulla pagina sicura di Stripe. La carta non la scrivi mai sul nostro sito" },
   ],
 
   // ---- la home: foto grandi a tutto schermo che cambiano da sole (cartella vetrina/) ----

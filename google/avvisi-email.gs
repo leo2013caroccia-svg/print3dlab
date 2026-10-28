@@ -9,6 +9,7 @@ const TITOLI = {
   "ordine": "🛒 Nuovo ordine",
   "file-da-stampare": "📦 Nuovo file da stampare",
   "contatto": "✉️ Nuovo messaggio",
+  "pagato": "💰 PAGATO",
 };
 
 // nomi piu' leggibili nell'email
