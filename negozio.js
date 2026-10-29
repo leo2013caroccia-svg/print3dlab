@@ -20,8 +20,9 @@ const fotoRiga = r => r.foto ? `<img src="foto/${r.foto}" alt="" loading="lazy">
 // ---- catalogo: le sezioni ----
 const quantiModelli = s => `${s.modelli.length} ${s.modelli.length === 1 ? "modello" : "modelli"}`;
 // la foto del modello, oppure il riquadro "Foto in arrivo"
+// foto2 (facoltativa): la seconda immagine, si vede passandoci sopra con il mouse
 const fotoModello = (m, nome) => m.foto
-  ? `<img src="foto/${m.foto}" alt="" loading="lazy" decoding="async"${m.inquadra ? ` style="object-position:${m.inquadra}"` : ""}>`
+  ? `<img src="foto/${m.foto}" alt="" loading="lazy" decoding="async"${m.inquadra ? ` style="object-position:${m.inquadra}"` : ""}>${m.foto2 ? `<img class="foto-seconda" src="foto/${m.foto2}" alt="" loading="lazy" decoding="async">` : ""}`
   : `<span class="foto-vuota" aria-hidden="true"><b>${sicuro(nome.charAt(0))}</b><small>Foto in arrivo</small></span>`;
 
 function creaCatalogo(){
@@ -133,6 +134,11 @@ function apriScheda(id){
   img.hidden = !p.foto;
   if(p.foto){ img.src = "foto/" + p.foto; img.style.objectPosition = p.inquadra || ""; img.alt = p.nome; }
   else img.removeAttribute("src");
+  // con due foto: due miniature per cambiare
+  const mini = $("[data-scheda-miniature]", d), foto = [p.foto, p.foto2].filter(Boolean);
+  mini.hidden = foto.length < 2;
+  mini.innerHTML = foto.length < 2 ? "" : foto.map((f, i) =>
+    `<button type="button" data-foto="${sicuro(f)}"${i === 0 ? ' aria-current="true"' : ""} aria-label="Foto ${i + 1}"><img src="foto/${sicuro(f)}" alt=""></button>`).join("");
   $("[data-scheda-vuota]", d).hidden = !!p.foto;
   $("[data-scheda-iniziale]", d).textContent = p.nome.charAt(0);
   $("[data-scheda-segno]", d).textContent = p.sezione.nome;
@@ -142,6 +148,7 @@ function apriScheda(id){
 
   const box = $("[data-scheda-misure-box]", d);
   box.hidden = !p.misure;
+  $("[data-scheda-misure-titolo]", d).textContent = p.titoloMisure || "Grandezza";
   if(p.misure){
     const seg = $("[data-scheda-misure]", d);
     seg.innerHTML = p.misure.map((m, i) => `<label><input type="radio" name="misura" value="${i}"${i === 0 ? " checked" : ""}><span>${sicuro(m.nome)}<small>${chf(p.prezzo + (m.piu || 0))}</small></span></label>`).join("");
@@ -176,6 +183,13 @@ function aggiornaScheda(){
 
 function avviaScheda(){
   const d = $("#scheda");
+  $("[data-scheda-miniature]", d).addEventListener("click", e => {
+    const b = e.target.closest("[data-foto]"); if(!b) return;
+    const img = $("[data-scheda-foto]", d);
+    img.src = "foto/" + b.dataset.foto;
+    img.style.objectPosition = b.dataset.foto === scheda.p.foto ? scheda.p.inquadra || "" : "";
+    $$("[data-foto]", d).forEach(x => x.toggleAttribute("aria-current", x === b));
+  });
   avviaContatore($("[data-contatore]", d), aggiornaScheda);
   $("[data-scheda-modulo]", d).addEventListener("submit", e => {
     e.preventDefault();

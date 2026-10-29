@@ -558,7 +558,7 @@
 <dialog class="scheda" id="scheda" aria-labelledby="scheda-titolo">
   <form method="dialog" class="scheda-dentro" data-scheda-modulo>
     <button class="chiudi" type="button" data-chiudi aria-label="Chiudi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <div class="scheda-foto"><img data-scheda-foto alt="" decoding="async"><span class="foto-vuota" data-scheda-vuota hidden aria-hidden="true"><b data-scheda-iniziale></b><small>Foto in arrivo</small></span></div>
+    <div class="scheda-foto"><img data-scheda-foto alt="" decoding="async"><span class="foto-vuota" data-scheda-vuota hidden aria-hidden="true"><b data-scheda-iniziale></b><small>Foto in arrivo</small></span><div class="scheda-miniature" data-scheda-miniature hidden></div></div>
     <div class="scheda-testo">
       <p class="scheda-segno" data-scheda-segno></p>
       <h2 id="scheda-titolo" data-scheda-nome></h2>
@@ -566,7 +566,7 @@
       <p class="scheda-descrizione" data-scheda-testo></p>
       <div class="scheda-scelte">
         <div class="opzione" data-scheda-misure-box>
-          <p class="opzione-titolo">Grandezza</p>
+          <p class="opzione-titolo" data-scheda-misure-titolo>Grandezza</p>
           <div class="segmenti" data-scheda-misure></div>
         </div>
         <div class="opzione">

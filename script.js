@@ -49,7 +49,7 @@ const NEGOZIO = {
   // altro: il secondo bottone (se manca: "Vedi tutti" che porta alla sezione del modello)
   // inquadra / inquadraTelefono: quale parte della foto tenere visibile ("50% 60%" = centro, un po' in basso)
   vetrina: [
-    { foto: "1-nido-ape", etichetta: "Il più bello", nome: "Portaoggetti a nido d'ape", sotto: "Per la scrivania, il bagno o le piante grasse.", prodotto: "portapenne-nido", alt: "Cestino a nido d'ape color rame appena stampato su una Bambu Lab" },
+    { foto: "1-nido-ape", etichetta: "Il più bello", nome: "Portapenne e portaoggetti", sotto: "Per la scrivania, il bagno o le piante grasse.", prodotto: "portapenne", alt: "Cestino a nido d'ape color rame appena stampato su una Bambu Lab" },
     { foto: "6-carica", etichetta: "Hai già un file 3D?", nome: "Carica il tuo file", sotto: "Vedi il modello in 3D e il prezzo in un secondo.", bottone: "Carica file", link: "#carica", altro: { testo: "Come funziona", link: "#come" }, inquadra: "0% 50%", inquadraTelefono: "62% 50%", alt: "Modellino di una casa stampato in 3D tenuto in mano" },
     { foto: "2-babbo-natale", etichetta: "Natale 2026", nome: "Babbo Natale da appendere", sotto: "Per l'albero, anche con il nome di chi lo riceve.", prodotto: "natale-babbo", inquadra: "50% 55%", alt: "Decorazione di Babbo Natale stampata in 3D sul piatto di una Bambu Lab" },
     { foto: "3-scritta", etichetta: "Personalizzato", nome: "Scritte con il tuo nome", sotto: "Portachiavi, targhette e scritte. Scegli tu il colore.", prodotto: "portachiavi-nome", altro: { testo: "Provalo adesso", link: "#prova" }, alt: "Scritta verde e nera stampata in 3D su una Bambu Lab" },
@@ -68,13 +68,18 @@ const NEGOZIO = {
   //   Un modello puo' cambiare le opzioni della sezione: misure: false (niente misure), scritta: false (niente nome)...
   //   ATTENZIONE: per vendere un modello di un altro serve una licenza che permetta l'uso commerciale.
   sezioni: [
-    { id: "portapenne", nome: "Portapenne", foto: "portaoggetti.jpg", segno: "Il più bello",
+    { id: "portapenne", nome: "Portapenne", foto: "portapenne-intrecciato.jpg", segno: "Il più bello",
       testo: "Per tenere in ordine penne, matite e pennarelli sulla scrivania.",
-      misure: [ { nome: "Piccolo · 8 cm", piu: 0 }, { nome: "Medio · 11 cm", piu: 4 }, { nome: "Grande · 14 cm", piu: 9 } ],
+      // modelli CC0 da Printables (si possono vendere senza citare l'autore). File in Documenti/Print3DLab-modelli
       modelli: [
-        { id: "portapenne-nido", nome: "Portapenne a nido d'ape", prezzo: 15, foto: "portaoggetti.jpg", testo: "Pareti traforate a esagoni: leggero ma resistente." },
-        { id: "portapenne-organizer", nome: "Organizer da scrivania", prezzo: 22, testo: "Penne, forbici, post-it e un posto per il telefono.", misure: false, dettagli: "Circa 20 × 10 × 10 cm" },
-        { id: "portapenne-gatto", nome: "Portapenne gatto", prezzo: 18, testo: "Un gatto seduto con le penne al posto della coda." },
+        { id: "portapenne-intrecciato", nome: "Portapenne intrecciato", prezzo: 24, foto: "portapenne-intrecciato.jpg", foto2: "portapenne-intrecciato-3d.jpg",
+          testo: "Sembra un cestino di vimini, ma è stampato in 3D. Il bordo è una treccia.", dettagli: "Circa 9 × 9 × 9,5 cm · 8 ore di stampa" },
+        { id: "portapenne-gyroid", nome: "Portapenne a rete", prezzo: 18, foto: "portapenne-gyroid.jpg", foto2: "portapenne-gyroid-2.jpg",
+          testo: "Pareti a rete ondulata: leggero, robusto e bello con due colori.", dettagli: "Circa 8 × 8 × 9 cm" },
+        { id: "portapenne-traforato", nome: "Portapenne traforato", prezzo: 14, foto: "portapenne-traforato.jpg", foto2: "portapenne-traforato-3d.jpg",
+          testo: "Un cubo con gli angoli morbidi e tanti buchi tondi, tutti diversi.", dettagli: "Circa 8,5 × 8,5 × 8,5 cm" },
+        { id: "portapenne-teschio", nome: "Portapenne teschio", prezzo: 15, foto: "portapenne-teschio.jpg", foto2: "portapenne-teschio-3d.jpg", inquadra: "50% 40%",
+          testo: "Un teschio fatto a rete: le penne escono dalla testa.", dettagli: "Circa 7 × 10 × 8 cm" },
       ] },
     { id: "scritte", nome: "Nomi e portachiavi", foto: "scritte.jpg", segno: "Il più richiesto",
       testo: "Portachiavi, targhette e scritte con il nome che vuoi.",
@@ -113,7 +118,15 @@ const NEGOZIO = {
       modelli: [
         { id: "mini-regalo", nome: "Pacchetto regalo", prezzo: 8, foto: "miniatura.jpg", testo: "Da mettere sotto l'albero o sopra il pacco vero." },
         { id: "mini-casetta", nome: "Casetta di montagna", prezzo: 10, testo: "Con il tetto spiovente e le finestre." },
-        { id: "mini-drago", nome: "Drago snodato", prezzo: 14, testo: "Esce già montato e si muove tutto.", misure: [ { nome: "Medio · 15 cm", piu: 0 }, { nome: "Grande · 30 cm", piu: 10 } ] },
+        { id: "drago-snodato", nome: "Drago snodato", prezzo: 12, foto: "drago-snodato.jpg", foto2: "drago-snodato-3d.jpg", inquadra: "22% 60%",
+          testo: "Esce dalla stampante già montato: testa, zampe e coda si muovono tutte.",
+          misure: [ { nome: "Medio · 20 cm", piu: 0 }, { nome: "Grande · 25 cm", piu: 6 } ] },
+      ] },
+    { id: "fidget", nome: "Fidget", foto: "stella-fidget.jpg", segno: "Novità",
+      testo: "Da tenere in mano, girare e schiacciare. Impossibile smettere.",
+      modelli: [
+        { id: "stella-fidget", nome: "Stella fidget", prezzo: 9, foto: "stella-fidget.jpg", foto2: "stella-fidget-3d.jpg",
+          testo: "Una stella a 8 punte che si allunga e si richiude a spirale.", dettagli: "Circa 8 cm, si allunga fino a 4 volte" },
       ] },
   ],
 
